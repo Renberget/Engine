@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{cebfd897-69fd-4a11-b2e3-1ff3e3e489a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{dd2b4c3c-7656-4663-b12f-d2d0cd23770f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Maths">
+      <UniqueIdentifier>{3dfe1e71-9aba-488c-a8b5-5d626e4bd33c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Utils">
+      <UniqueIdentifier>{5d0e94ae-b9e9-4058-bab3-a71dd7a1e220}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\External">
+      <UniqueIdentifier>{63bf6481-f986-4d9d-b10a-a51023b082b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{898d742a-3e34-4bc9-82f5-678711fcdd0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Input">
+      <UniqueIdentifier>{e53617df-85b7-41a6-af1d-d37436e3e974}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\IndicesBuffer.hpp" />
+    <ClInclude Include="include\Input\Action.hpp" />
+    <ClInclude Include="include\Input\ActionInstance.hpp" />
+    <ClInclude Include="include\Input\ActionValue.hpp" />
+    <ClInclude Include="include\Input\Clipboard.hpp" />
+    <ClInclude Include="include\Input\Gamepad.hpp" />
+    <ClInclude Include="include\Input\Keyboard.hpp" />
+    <ClInclude Include="include\Input\Manager.hpp" />
+    <ClInclude Include="include\Input\Map.hpp" />
+    <ClInclude Include="include\Input\Modifier.hpp" />
+    <ClInclude Include="include\Input\Mouse.hpp" />
+    <ClInclude Include="include\Maths\Mat.hpp" />
+    <ClInclude Include="include\Maths\Maths.hpp" />
+    <ClInclude Include="include\Maths\Quat.hpp" />
+    <ClInclude Include="include\Maths\Vec2.hpp" />
+    <ClInclude Include="include\Maths\Vec3.hpp" />
+    <ClInclude Include="include\Maths\Vec4.hpp" />
+    <ClInclude Include="include\Utils\Delegate.hpp" />
+    <ClInclude Include="include\Utils\Flags.hpp" />
+    <ClInclude Include="include\Utils\MoreTypeTraits.hpp" />
+    <ClInclude Include="include\ArrayBuffer.hpp" />
+    <ClInclude Include="include\Blending.hpp" />
+    <ClInclude Include="include\Buffer.hpp" />
+    <ClInclude Include="include\Clock.hpp" />
+    <ClInclude Include="include\Color.hpp" />
+    <ClInclude Include="include\Color32.hpp" />
+    <ClInclude Include="include\CullMode.hpp" />
+    <ClInclude Include="include\Cursor.hpp" />
+    <ClInclude Include="include\Engine.hpp" />
+    <ClInclude Include="include\Glfw.hpp" />
+    <ClInclude Include="include\Image.hpp" />
+    <ClInclude Include="include\Mesh.hpp" />
+    <ClInclude Include="include\MeshLayout.hpp" />
+    <ClInclude Include="include\Monitor.hpp" />
+    <ClInclude Include="include\Rect.hpp" />
+    <ClInclude Include="include\RenderTarget.hpp" />
+    <ClInclude Include="include\RenderTexture.hpp" />
+    <ClInclude Include="include\RestrictedSpan.hpp" />
+    <ClInclude Include="include\Shader.hpp" />
+    <ClInclude Include="include\Texture.hpp" />
+    <ClInclude Include="include\Type.hpp" />
+    <ClInclude Include="include\UniformBuffer.hpp" />
+    <ClInclude Include="include\Window.hpp" />
+    <ClInclude Include="src\External\StbImage.h" />
+    <ClInclude Include="src\External\StbImageWrite.h" />
+    <ClInclude Include="src\Input\Impl.hpp" />
+    <ClInclude Include="src\CursorImpl.hpp" />
+    <ClInclude Include="src\MonitorImpl.hpp" />
+    <ClInclude Include="src\WindowImpl.hpp" />
+    <ClInclude Include="include\Utils\Debug.hpp" />
+    <ClInclude Include="src\Input\EnumsAsserts.cpp" />
+    <ClInclude Include="include\Utils\Uncopyable.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\External\glad.c" />
+    <ClCompile Include="src\Input\Action.cpp" />
+    <ClCompile Include="src\Input\ActionInstance.cpp" />
+    <ClCompile Include="src\Input\ActionValue.cpp" />
+    <ClCompile Include="src\Input\Clipboard.cpp" />
+    <ClCompile Include="src\Input\Gamepad.cpp" />
+    <ClCompile Include="src\Input\Impl.cpp" />
+    <ClCompile Include="src\Input\Keyboard.cpp" />
+    <ClCompile Include="src\Input\Manager.cpp" />
+    <ClCompile Include="src\Input\Map.cpp" />
+    <ClCompile Include="src\Input\Mouse.cpp" />
+    <ClCompile Include="src\Blending.cpp" />
+    <ClCompile Include="src\Buffer.cpp" />
+    <ClCompile Include="src\Clock.cpp" />
+    <ClCompile Include="src\Color.cpp" />
+    <ClCompile Include="src\Color32.cpp" />
+    <ClCompile Include="src\Cursor.cpp" />
+    <ClCompile Include="src\CursorImpl.cpp" />
+    <ClCompile Include="src\Glfw.cpp" />
+    <ClCompile Include="src\Image.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshLayout.cpp" />
+    <ClCompile Include="src\Monitor.cpp" />
+    <ClCompile Include="src\MonitorImpl.cpp" />
+    <ClCompile Include="src\RenderTarget.cpp" />
+    <ClCompile Include="src\RenderTexture.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\UniformBuffer.cpp" />
+    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\WindowImpl.cpp" />
+    <ClCompile Include="src\Input\Modifier.cpp" />
+    <ClCompile Include="src\EnumsAsserts.cpp" />
+  </ItemGroup>
+</Project>

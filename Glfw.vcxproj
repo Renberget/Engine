@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Engine\include\Input\Keyboard.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ArrayBuffer.hpp" />
+    <ClInclude Include="include\Blending.hpp" />
+    <ClInclude Include="include\Buffer.hpp" />
+    <ClInclude Include="include\Clock.hpp" />
+    <ClInclude Include="include\Color.hpp" />
+    <ClInclude Include="include\Color32.hpp" />
+    <ClInclude Include="include\CullMode.hpp" />
+    <ClInclude Include="include\Cursor.hpp" />
+    <ClInclude Include="include\Engine.hpp" />
+    <ClInclude Include="include\Glfw.hpp" />
+    <ClInclude Include="include\Image.hpp" />
+    <ClInclude Include="include\IndicesBuffer.hpp" />
+    <ClInclude Include="include\Input\Action.hpp" />
+    <ClInclude Include="include\Input\ActionInstance.hpp" />
+    <ClInclude Include="include\Input\ActionValue.hpp" />
+    <ClInclude Include="include\Input\Clipboard.hpp" />
+    <ClInclude Include="include\Input\Gamepad.hpp" />
+    <ClInclude Include="include\Input\Keyboard.hpp" />
+    <ClInclude Include="include\Input\Manager.hpp" />
+    <ClInclude Include="include\Input\Map.hpp" />
+    <ClInclude Include="include\Input\Modifier.hpp" />
+    <ClInclude Include="include\Input\Mouse.hpp" />
+    <ClInclude Include="include\Maths\Mat.hpp" />
+    <ClInclude Include="include\Maths\Maths.hpp" />
+    <ClInclude Include="include\Maths\Quat.hpp" />
+    <ClInclude Include="include\Maths\Vec2.hpp" />
+    <ClInclude Include="include\Maths\Vec3.hpp" />
+    <ClInclude Include="include\Maths\Vec4.hpp" />
+    <ClInclude Include="include\Mesh.hpp" />
+    <ClInclude Include="include\MeshLayout.hpp" />
+    <ClInclude Include="include\Monitor.hpp" />
+    <ClInclude Include="include\Rect.hpp" />
+    <ClInclude Include="include\RenderTarget.hpp" />
+    <ClInclude Include="include\RenderTexture.hpp" />
+    <ClInclude Include="include\RestrictedSpan.hpp" />
+    <ClInclude Include="include\Shader.hpp" />
+    <ClInclude Include="include\Texture.hpp" />
+    <ClInclude Include="include\Type.hpp" />
+    <ClInclude Include="include\UniformBuffer.hpp" />
+    <ClInclude Include="include\Utils\Uncopyable.hpp" />
+    <ClInclude Include="include\Utils\Debug.hpp" />
+    <ClInclude Include="include\Utils\Delegate.hpp" />
+    <ClInclude Include="include\Utils\Flags.hpp" />
+    <ClInclude Include="include\Utils\MoreTypeTraits.hpp" />
+    <ClInclude Include="include\Window.hpp" />
+    <ClInclude Include="src\CursorImpl.hpp" />
+    <ClInclude Include="src\External\StbImage.h" />
+    <ClInclude Include="src\External\StbImageWrite.h" />
+    <ClInclude Include="src\Input\EnumsAsserts.cpp" />
+    <ClInclude Include="src\Input\Impl.hpp" />
+    <ClInclude Include="src\MonitorImpl.hpp" />
+    <ClInclude Include="src\WindowImpl.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Blending.cpp" />
+    <ClCompile Include="src\Buffer.cpp" />
+    <ClCompile Include="src\Clock.cpp" />
+    <ClCompile Include="src\Color.cpp" />
+    <ClCompile Include="src\Color32.cpp" />
+    <ClCompile Include="src\Cursor.cpp" />
+    <ClCompile Include="src\CursorImpl.cpp" />
+    <ClCompile Include="src\EnumsAsserts.cpp" />
+    <ClCompile Include="src\External\glad.c" />
+    <ClCompile Include="src\Glfw.cpp" />
+    <ClCompile Include="src\Image.cpp" />
+    <ClCompile Include="src\Input\Action.cpp" />
+    <ClCompile Include="src\Input\ActionInstance.cpp" />
+    <ClCompile Include="src\Input\ActionValue.cpp" />
+    <ClCompile Include="src\Input\Clipboard.cpp" />
+    <ClCompile Include="src\Input\Gamepad.cpp" />
+    <ClCompile Include="src\Input\Impl.cpp" />
+    <ClCompile Include="src\Input\Keyboard.cpp" />
+    <ClCompile Include="src\Input\Manager.cpp" />
+    <ClCompile Include="src\Input\Map.cpp" />
+    <ClCompile Include="src\Input\Modifier.cpp" />
+    <ClCompile Include="src\Input\Mouse.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshLayout.cpp" />
+    <ClCompile Include="src\Monitor.cpp" />
+    <ClCompile Include="src\MonitorImpl.cpp" />
+    <ClCompile Include="src\RenderTarget.cpp" />
+    <ClCompile Include="src\RenderTexture.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\UniformBuffer.cpp" />
+    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\WindowImpl.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{68f88474-6ae6-45cd-941e-79c50c3dad45}</ProjectGuid>
+    <RootNamespace>Glfw</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Engine</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\.libraries\include;$(ProjectDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\theog\Desktop\Documents\Visual Studio\.libraries\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\.libraries\include;$(ProjectDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\theog\Desktop\Documents\Visual Studio\.libraries\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\.libraries\include;$(ProjectDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\theog\Desktop\Documents\Visual Studio\.libraries\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FastNoiseD.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\.libraries\include;$(ProjectDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\theog\Desktop\Documents\Visual Studio\.libraries\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FastNoise.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
