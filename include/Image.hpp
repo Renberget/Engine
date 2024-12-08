@@ -19,14 +19,14 @@ public:
 	Image(Image&& image) noexcept;
 	Image& operator=(Image&& image) noexcept;
 	//Creates image from file
-	explicit Image(const std::string& filePath);
+	explicit Image(std::string_view filePath);
 	//Creates image from texture (GPU memory)
 	explicit Image(const Texture& texture);
 	//Creates image with uninitialized memory
 	explicit Image(const Vec2i& size, Texture::Format format);
 	~Image();
 	//Creates image from file
-	void create(const std::string& filePath);
+	void create(std::string_view filePath);
 	//Creates image from texture (GPU memory)
 	void create(const Texture& texture);
 	//Creates image with uninitialized memory
@@ -34,7 +34,7 @@ public:
 	//Update pixels from texture (sizes must match)
 	void update(const Texture& texture);
 	//Save image to file
-	void save(const std::string& filePath, FileFormat format) const;
+	void save(std::string_view filePath, FileFormat format) const;
 	//Returns the image 2D size
 	[[nodiscard]] const Vec2i& size() const;
 

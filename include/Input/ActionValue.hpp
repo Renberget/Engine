@@ -13,6 +13,7 @@ namespace input
 		ActionValue(float value);
 		ActionValue(Vec2f value);
 		Action::Type type() const;
+		const Vec2f& value() const;
 		Vec2f& value();
 		ActionValue& operator+=(const ActionValue& other);
 		template<typename T>

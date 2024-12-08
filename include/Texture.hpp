@@ -2,7 +2,7 @@
 #include "Maths/Vec2.hpp"
 #include "Type.hpp"
 #include "Utils/Uncopyable.hpp"
-#include <string>
+#include <string_view>
 
 class Image;
 
@@ -46,14 +46,14 @@ public:
 	Texture(Texture&& texture) noexcept;
 	Texture& operator=(Texture&& texture) noexcept;
 	//Creates texture from file
-	explicit Texture(const std::string& filePath);
+	explicit Texture(std::string_view filePath);
 	//Creates texture from image (CPU memory)
 	explicit Texture(const Image& image);
 	//Creates texture with uninitialized data
 	explicit Texture(const Vec2i& size, Format format, bool enableMSAA = false);
 	~Texture();
 	//Creates texture from file
-	void create(const std::string& filePath);
+	void create(std::string_view filePath);
 	//Creates texture from image (CPU memory)
 	void create(const Image& image);
 	//Creates texture with uninitialized data

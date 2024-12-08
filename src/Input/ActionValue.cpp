@@ -1,5 +1,5 @@
 #include "Input/ActionValue.hpp"
-#include "Utils/Debug.hpp"
+
 namespace input
 {
 	ActionValue::ActionValue(Action::Type type) : mValue(0.f, 0.f), mType(type) {}
@@ -13,6 +13,11 @@ namespace input
 	Action::Type ActionValue::type() const
 	{
 		return mType;
+	}
+
+	const Vec2f& ActionValue::value() const
+	{
+		return mValue;
 	}
 
 	Vec2f& ActionValue::value()

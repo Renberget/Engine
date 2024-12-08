@@ -2,6 +2,11 @@
 
 namespace input
 {
+	Mapping* Map::add(const Binding& binding, const std::shared_ptr<Action>& action, std::initializer_list<const std::shared_ptr<IModifier>> modifiers)
+	{
+		return add(binding, action, { modifiers.begin(), modifiers.end() });
+	}
+
 	Mapping* Map::add(const Binding& binding, const std::shared_ptr<Action>& action, std::span<const std::shared_ptr<IModifier>> modifiers)
 	{
 		if (mBindingToMapping.contains(binding))
@@ -15,13 +20,16 @@ namespace input
 		return &mBindingToMapping.insert({ binding, Mapping{ std::any(), std::vector<std::shared_ptr<IModifier>>(modifiers.begin(), modifiers.end()), instance } }).first->second;
 	}
 
-	bool Map::addMapping(ActionInstance& instance, const Binding& binding, std::span<const std::shared_ptr<IModifier>> modifiers)
+	Mapping* Map::addMapping(ActionInstance& instance, const Binding& binding, std::initializer_list<const std::shared_ptr<IModifier>> modifiers)
+	{
+		return addMapping(instance, binding, { modifiers.begin(), modifiers.end() });
+	}
+
+	Mapping* Map::addMapping(ActionInstance& instance, const Binding& binding, std::span<const std::shared_ptr<IModifier>> modifiers)
 	{
 		if (mBindingToMapping.contains(binding))
-			return false;
-		
-		mBindingToMapping.insert({ binding, Mapping{ std::any(), std::vector<std::shared_ptr<IModifier>>(modifiers.begin(), modifiers.end()), instance }});
-		return true;
+			return nullptr;
+		return &mBindingToMapping.insert({ binding, Mapping{ std::any(), std::vector<std::shared_ptr<IModifier>>(modifiers.begin(), modifiers.end()), instance }}).first->second;
 	}
 
 	bool Map::setMapping(ActionInstance& instance, const Binding& oldBinding, const Binding& newBinding)
@@ -42,8 +50,7 @@ namespace input
 
 	void Map::applyInput(const Binding& binding, ActionValue value)
 	{
-		auto it = mBindingToMapping.find(binding);
-		if (it != mBindingToMapping.end())
+		if (auto it = mBindingToMapping.find(binding); it != mBindingToMapping.end())
 		{
 			for (const std::shared_ptr<IModifier>& modifier : it->second.modifiers)
 				modifier->apply(value);

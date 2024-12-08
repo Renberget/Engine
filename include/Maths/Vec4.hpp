@@ -14,7 +14,7 @@ struct Vec4
 	constexpr Vec4(const Vec2<T>& xy, const Vec2<T>& zw) : x(xy.x), y(xy.y), z(zw.z), w(zw.w) {}
 	constexpr Vec4(const Vec3<T>& xyz, T w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 	constexpr Vec4(T x, const Vec3<T>& yzw) : x(x), y(yzw.y), z(yzw.z), w(yzw.w) {}
-	template<typename U>
+	template<Arithmetic U>
 	constexpr Vec4(const Vec4<U>& other) :
 		x(static_cast<T>(other.x)),
 		y(static_cast<T>(other.y)),

@@ -3,6 +3,7 @@
 #include "UniformBuffer.hpp"
 #include "Maths/Mat.hpp"
 #include <string>
+#include <string_view>
 #include <variant>
 #include <unordered_map>
 
@@ -12,11 +13,11 @@ public:
     Shader() = default;
     Shader(Shader&& shader) noexcept;
     Shader& operator=(Shader&& shader) noexcept;
-    //Creates shader from files
-    explicit Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath = {});
     ~Shader();
     //Creates shader from files
-    void create(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath = {});
+    void createFromFiles(std::string_view vertex, std::string_view fragment, std::string_view geometry = {});
+    //Creates shader from data
+    void createFromData(std::string_view vertex, std::string_view fragment, std::string_view geometry = {});
     //Binds shader as target for operations
     void bind() const;
     void setUniform(const std::string& name, float_t value);
@@ -77,7 +78,9 @@ private:
 
     constexpr static size_t LogMaxSize = 512;
 
-    void loadAndAttachShader(const std::string& path, uint32_t type);
+    void compileAndRegisterUniforms();
+    void loadAndAttachShader(std::string_view path, uint32_t type);
+    void attachShader(std::string_view code, uint32_t type);
 
 	uint32_t mId = 0;
     std::unordered_map<std::string, UniformData> mUniforms;

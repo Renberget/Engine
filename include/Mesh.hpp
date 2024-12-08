@@ -20,15 +20,9 @@ public:
 	Mesh() = default;
 	Mesh(Mesh&& mesh) noexcept;
 	Mesh& operator=(Mesh&& mesh) noexcept;
-	explicit Mesh(const MeshLayout& vertexLayout, ArrayBuffer&& vertices);
-	explicit Mesh(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, ArrayBuffer&& instances);
-	explicit Mesh(const MeshLayout& vertexLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices);
-	explicit Mesh(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices, ArrayBuffer&& instances);
 	~Mesh();
-	void create(const MeshLayout& vertexLayout, ArrayBuffer&& vertices);
-	void create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, ArrayBuffer&& instances);
-	void create(const MeshLayout& vertexLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices);
-	void create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices, ArrayBuffer&& instances);
+	void create(const MeshLayout& vertexLayout);
+	void create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout);
 	//Set the mesh primitive
 	void setPrimitive(Primitive primitive);
 	
@@ -42,8 +36,6 @@ public:
 	[[nodiscard]] uint32_t id() const;
 
 private:
-	void create(const MeshLayout& vertexLayout);
-	void create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout);
 	void draw() const;
 
 	IndicesBuffer mIndices;

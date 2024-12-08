@@ -20,78 +20,43 @@ Shader& Shader::operator=(Shader&& shader) noexcept
 	return *this;
 }
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
-{
-	create(vertexPath, fragmentPath, geometryPath);
-}
-
 Shader::~Shader()
 {
 	glDeleteProgram(mId);
 }
 
-void Shader::create(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+void Shader::createFromFiles(std::string_view vertex, std::string_view fragment, std::string_view geometry)
 {
 	assert(!mId);
 	mId = glCreateProgram();
 
-	if (!vertexPath.empty())
-		loadAndAttachShader(vertexPath, GL_VERTEX_SHADER);
+	if (!vertex.empty())
+		loadAndAttachShader(vertex, GL_VERTEX_SHADER);
 
-	if (!fragmentPath.empty())
-		loadAndAttachShader(fragmentPath, GL_FRAGMENT_SHADER);
+	if (!fragment.empty())
+		loadAndAttachShader(fragment, GL_FRAGMENT_SHADER);
 
-	if (!geometryPath.empty())
-		loadAndAttachShader(geometryPath, GL_GEOMETRY_SHADER);
+	if (!geometry.empty())
+		loadAndAttachShader(geometry, GL_GEOMETRY_SHADER);
 
-	glLinkProgram(mId);
-	GLint success;
-	glGetProgramiv(mId, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		std::array<GLchar, LogMaxSize> log;
-		glGetProgramInfoLog(mId, static_cast<GLsizei>(log.size()), nullptr, log.data());
-		throw std::runtime_error(log.data());
-	}
+	compileAndRegisterUniforms();
+}
 
-	GLint maxNameLength;
-	glGetProgramiv(mId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLength);
-	std::string name(static_cast<size_t>(maxNameLength), ' ');
+void Shader::createFromData(std::string_view vertex, std::string_view fragment, std::string_view geometry)
+{
+	assert(!mId);
+	mId = glCreateProgram();
 
-	GLint count;
-	glGetProgramiv(mId, GL_ACTIVE_UNIFORMS, &count);
-	mUniforms.reserve(count);
-	int32_t textureCount = 0;
-	for (GLint i = 0; i < count; ++i)
-	{
-		UniformData data{};
-		data.location = i;
+	if (!vertex.empty())
+		attachShader(vertex, GL_VERTEX_SHADER);
 
-		GLsizei nameLength;
-		GLint size;
-		GLenum type;
-		glGetActiveUniform(mId, static_cast<GLuint>(i), maxNameLength, &nameLength, &size, &type, name.data());
-		if (type == GL_SAMPLER_2D)
-		{
-			data.textureIndex = textureCount++;
-			mTextures.push_back(nullptr);
-		}
-		mUniforms.insert({ std::string(name.c_str(), static_cast<size_t>(nameLength)), data });
-	}
-	
-	glGetProgramiv(mId, GL_ACTIVE_UNIFORM_BLOCKS, &count);
-	for (GLint i = 0; i < count; ++i)
-	{
-		GLuint index = static_cast<GLuint>(i);
-		UniformData data{};
-		data.location = index;
+	if (!fragment.empty())
+		attachShader(fragment, GL_FRAGMENT_SHADER);
 
-		GLint nameLength;
-		glGetActiveUniformBlockiv(mId, index, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLength);
-		name.resize(nameLength);
-		glGetActiveUniformBlockName(mId, index, nameLength, nullptr, name.data());
-		mUniforms.insert({ std::string(name.c_str(), static_cast<size_t>(nameLength - 1)), data });
-	}
+	if (!geometry.empty())
+		attachShader(geometry, GL_GEOMETRY_SHADER);
+
+	compileAndRegisterUniforms();
 }
 
 void Shader::bind() const
@@ -107,7 +72,7 @@ void Shader::bind() const
 void Shader::setUniform(const std::string& name, float_t value)
 {
 	glUseProgram(mId);
-	glUniform1f(std::get<int32_t>(mUniforms.find(name)->second.location), value);
+	glUniform1f(std::get<int32_t>(mUniforms.find(name.data())->second.location), value);
 }
 
 void Shader::setUniform(const std::string& name, const Vec2f& value)
@@ -386,28 +351,87 @@ uint32_t Shader::id() const
 	return mId;
 }
 
-void Shader::loadAndAttachShader(const std::string& path, GLenum type)
+void Shader::compileAndRegisterUniforms()
 {
-	std::ifstream file(path);
+	glLinkProgram(mId);
+	GLint success;
+	glGetProgramiv(mId, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		std::array<GLchar, LogMaxSize> log;
+		glGetProgramInfoLog(mId, static_cast<GLsizei>(log.size()), nullptr, log.data());
+		throw std::runtime_error(log.data());
+	}
+
+	GLint maxNameLength;
+	glGetProgramiv(mId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLength);
+	std::string name(static_cast<size_t>(maxNameLength), ' ');
+
+	GLint count;
+	glGetProgramiv(mId, GL_ACTIVE_UNIFORMS, &count);
+	mUniforms.reserve(count);
+	int32_t textureCount = 0;
+	for (GLint i = 0; i < count; ++i)
+	{
+		UniformData data{};
+		data.location = i;
+
+		GLsizei nameLength;
+		GLint size;
+		GLenum type;
+		glGetActiveUniform(mId, static_cast<GLuint>(i), maxNameLength, &nameLength, &size, &type, name.data());
+		if (type == GL_SAMPLER_2D)
+		{
+			data.textureIndex = textureCount++;
+			mTextures.push_back(nullptr);
+		}
+		mUniforms.insert({ std::string(name.c_str(), static_cast<size_t>(nameLength)), data });
+	}
+
+	glGetProgramiv(mId, GL_ACTIVE_UNIFORM_BLOCKS, &count);
+	for (GLint i = 0; i < count; ++i)
+	{
+		GLuint index = static_cast<GLuint>(i);
+		UniformData data{};
+		data.location = index;
+
+		GLint nameLength;
+		glGetActiveUniformBlockiv(mId, index, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLength);
+		name.resize(nameLength);
+		glGetActiveUniformBlockName(mId, index, nameLength, nullptr, name.data());
+		mUniforms.insert({ std::string(name.c_str(), static_cast<size_t>(nameLength - 1)), data });
+	}
+}
+
+void Shader::loadAndAttachShader(std::string_view path, GLenum type)
+{
+	std::ifstream file(path.data());
 	if (!file.is_open())
-		throw std::runtime_error(path + " : File not found");
+		throw std::runtime_error(std::string(path) + " : File not found");
 	std::stringstream buffer;
 	buffer << file.rdbuf();
 	file.close();
 	std::string string = buffer.str();
-	const GLchar* code = string.c_str();
+	attachShader(string, type);
+}
+
+void Shader::attachShader(std::string_view code, uint32_t type)
+{
+	const GLchar* codeData = code.data();
 
 	GLuint id = glCreateShader(type);
-	glShaderSource(id, 1, &code, nullptr);
+	glShaderSource(id, 1, &codeData, nullptr);
 	glCompileShader(id);
-
+	
 	GLint success;
 	glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		std::array<GLchar, LogMaxSize> log;
-		glGetShaderInfoLog(id, static_cast<GLsizei>(log.size()), nullptr, log.data());
-		throw std::runtime_error(log.data());
+		std::string log(LogMaxSize, ' ');
+		GLsizei logSize;
+		glGetShaderInfoLog(id, static_cast<GLsizei>(log.size()), &logSize, log.data());
+		log.resize(logSize);
+		throw std::runtime_error(log);
 	}
 	glAttachShader(mId, id);
 	glDeleteShader(id);

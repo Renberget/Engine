@@ -22,7 +22,7 @@ Image& Image::operator=(Image&& image) noexcept
 	return *this;
 }
 
-Image::Image(const std::string& filePath)
+Image::Image(std::string_view filePath)
 {
 	create(filePath);
 }
@@ -42,13 +42,14 @@ Image::~Image()
 	stbi_image_free(mPixels);
 }
 
-void Image::create(const std::string& filePath)
+void Image::create(std::string_view filePath)
 {
 	if (!mPixels)
 		stbi_image_free(mPixels);
 	
 	int nbChannels;
-	mPixels = stbi_load(filePath.c_str(), &mSize.x, &mSize.y, &nbChannels, 0);
+	mPixels = stbi_load(filePath.data(), &mSize.x, &mSize.y, &nbChannels, 0);
+	assert(mPixels);
 	assert(nbChannels <= 4);
 	mFormat = nbChannels == 1 ? Texture::Format::R : 
 	nbChannels == 2 ? Texture::Format::RG :
@@ -84,22 +85,22 @@ void Image::update(const Texture& texture)
 	glGetTexImage(GL_TEXTURE_2D, 0, static_cast<GLenum>(mFormat), GL_UNSIGNED_BYTE, reinterpret_cast<void*>(mPixels));
 }
 
-void Image::save(const std::string& filePath, FileFormat format) const
+void Image::save(std::string_view filePath, FileFormat format) const
 {
 	switch (format)
 	{
 	case FileFormat::PNG:
-		stbi_write_png(filePath.c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), 4 * mSize.x);
+		stbi_write_png(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), 4 * mSize.x);
 		return;
 	case FileFormat::BMP:
-		stbi_write_bmp(filePath.c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
+		stbi_write_bmp(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
 		return;
 	case FileFormat::TGA:
-		stbi_write_tga(filePath.c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
+		stbi_write_tga(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
 		return;
 	case FileFormat::JPG:
 		constexpr int jpgMaxQuality = 100;
-		stbi_write_jpg(filePath.c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), jpgMaxQuality);
+		stbi_write_jpg(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), jpgMaxQuality);
 		return;
 	}
 }

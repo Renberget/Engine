@@ -1,5 +1,5 @@
 #pragma once
-#include "Rect.hpp"
+#include "Maths/Rect.hpp"
 #include "Color.hpp"
 #include "Mesh.hpp"
 #include "Shader.hpp"

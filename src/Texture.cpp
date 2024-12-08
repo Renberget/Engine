@@ -20,7 +20,7 @@ Texture& Texture::operator=(Texture&& texture) noexcept
 	return *this;
 }
 
-Texture::Texture(const std::string& filePath)
+Texture::Texture(std::string_view filePath)
 {
 	create(filePath);
 }
@@ -40,7 +40,7 @@ Texture::~Texture()
 	glDeleteTextures(1, &mId);
 }
 
-void Texture::create(const std::string& filePath)
+void Texture::create(std::string_view filePath)
 {
 	Image image(filePath);
 	mSize = image.size();

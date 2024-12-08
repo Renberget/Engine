@@ -12,7 +12,7 @@ struct Vec2
 
 	constexpr Vec2() = default;
 	constexpr Vec2(T x, T y) : x(x), y(y) {}
-	template<typename U>
+	template<Arithmetic U>
 	constexpr Vec2(const Vec2<U>& other) :
 		x(static_cast<T>(other.x)),
 		y(static_cast<T>(other.y)) {}

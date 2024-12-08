@@ -2,12 +2,12 @@
 #include "Maths/Vec2.hpp"
 #include <array>
 
-template<typename T>
+template<Arithmetic T>
 struct Rect
 {
 	constexpr Rect() {}
 	constexpr Rect(T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}
-	template<typename U>
+	template<Arithmetic U>
 	constexpr Rect(const Rect<U>& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 	//Returns true if pos is inside the rect
 	bool contains(const Vec2<T>& pos) const
@@ -33,6 +33,18 @@ struct Rect
 	{
 		return x != other.x || y != other.y || w != other.w || h != other.y;
 	}
+	Vec2<T> end() const
+	{
+		return { x + w, y + h };
+	}
+	T endX() const
+	{
+		return x + w;
+	}
+	T endY() const
+	{
+		return y + h;
+	}
 
 	T x = 0;
 	T y = 0;
@@ -41,4 +53,5 @@ struct Rect
 };
 
 using FloatRect = Rect<float_t>;
+using DoubleRect = Rect<double_t>;
 using IntRect = Rect<int32_t>;

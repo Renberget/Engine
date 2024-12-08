@@ -22,57 +22,33 @@ Mesh& Mesh::operator=(Mesh&& mesh) noexcept
 	return *this;
 }
 
-Mesh::Mesh(const MeshLayout& vertexLayout, ArrayBuffer&& vertices)
+void Mesh::create(const MeshLayout& vertexLayout)
 {
-	create(vertexLayout, std::move(vertices));
+	mVertices.bind();
+	if (!mId)
+		glGenVertexArrays(1, &mId);
+	glBindVertexArray(mId);
+	vertexLayout.registerAttribs(MeshLayout::Usage::Vertex);
+	mIndices.bind();
+	glBindVertexArray(0);
 }
 
-Mesh::Mesh(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, ArrayBuffer&& instances)
+void Mesh::create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout)
 {
-	create(vertexLayout, instanceLayout, std::move(vertices), std::move(instances));
-}
-
-Mesh::Mesh(const MeshLayout& vertexLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices)
-{
-	create(vertexLayout, std::move(vertices), std::move(indices));
-}
-
-Mesh::Mesh(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices, ArrayBuffer&& instances)
-{
-	create(vertexLayout, instanceLayout, std::move(vertices), std::move(indices), std::move(instances));
+	mVertices.bind();
+	if (!mId)
+		glGenVertexArrays(1, &mId);
+	glBindVertexArray(mId);
+	vertexLayout.registerAttribs(MeshLayout::Usage::Vertex);
+	mIndices.bind();
+	mInstances.bind();
+	instanceLayout.registerAttribs(MeshLayout::Usage::Instance, &vertexLayout);
+	glBindVertexArray(0);
 }
 
 Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &mId);
-}
-
-void Mesh::create(const MeshLayout& vertexLayout, ArrayBuffer&& vertices)
-{
-	mVertices = std::move(vertices);
-	create(vertexLayout);
-}
-
-void Mesh::create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, ArrayBuffer&& instances)
-{
-	mVertices = std::move(vertices);
-	mInstances = std::move(instances);
-	create(vertexLayout, instanceLayout);
-}
-
-void Mesh::create(const MeshLayout& vertexLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices)
-{
-	mVertices = std::move(vertices);
-	mIndices = std::move(indices);
-	create(vertexLayout);
-}
-
-void Mesh::create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout, ArrayBuffer&& vertices, IndicesBuffer&& indices, ArrayBuffer&& instances)
-{
-	mVertices = std::move(vertices);
-	mIndices = std::move(indices);
-	mInstances = std::move(instances);
-	create(vertexLayout, instanceLayout);
 }
 
 void Mesh::setPrimitive(Primitive primitive)
@@ -100,51 +76,19 @@ uint32_t Mesh::id() const
 	return mId;
 }
 
-void Mesh::create(const MeshLayout& vertexLayout)
-{
-	mVertices.bind();
-	if (!mId)
-		glGenVertexArrays(1, &mId);
-	glBindVertexArray(mId);
-	vertexLayout.registerAttribs(MeshLayout::Usage::Vertex);
-	mIndices.bind();
-	glBindVertexArray(0);
-}
-
-void Mesh::create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout)
-{
-	mVertices.bind();
-	if (!mId)
-		glGenVertexArrays(1, &mId);
-	glBindVertexArray(mId);
-	vertexLayout.registerAttribs(MeshLayout::Usage::Vertex);
-	mIndices.bind();
-	mInstances.bind();
-	instanceLayout.registerAttribs(MeshLayout::Usage::Instance, &vertexLayout);
-	glBindVertexArray(0);
-}
-
 void Mesh::draw() const
 {
 	glBindVertexArray(mId);
+	GLsizei instanceCount = mInstances.size() ? static_cast<GLsizei>(mInstances.size()) : 1;
 	if (mIndices.id())
 	{
 		assert(mIndices.storedType() == typeid(uint8_t) || mIndices.storedType() == typeid(uint16_t) || mIndices.storedType() == typeid(uint32_t));
 		GLenum indexType =
 			mIndices.storedType() == typeid(uint8_t) ? GL_UNSIGNED_BYTE :
 			mIndices.storedType() == typeid(uint16_t) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-		if (mInstances.id())
-		{
-			glDrawElementsInstanced(static_cast<GLenum>(mPrimitive), static_cast<GLsizei>(mIndices.size()), indexType, nullptr, static_cast<GLsizei>(mInstances.size()));
-			return;
-		}
-		glDrawElements(static_cast<GLenum>(mPrimitive), static_cast<GLsizei>(mIndices.size()), indexType, nullptr);
+
+		glDrawElementsInstanced(static_cast<GLenum>(mPrimitive), static_cast<GLsizei>(mIndices.size()), indexType, nullptr, instanceCount);
 		return;
 	}
-	if (mInstances.id())
-	{
-		glDrawArraysInstanced(static_cast<GLenum>(mPrimitive), 0, static_cast<GLsizei>(mVertices.size()), static_cast<GLsizei>(mInstances.size()));
-		return;
-	}
-	glDrawArrays(static_cast<GLenum>(mPrimitive), 0, static_cast<GLsizei>(mVertices.size()));
+	glDrawArraysInstanced(static_cast<GLenum>(mPrimitive), 0, static_cast<GLsizei>(mVertices.size()), instanceCount);
 }

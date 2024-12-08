@@ -53,7 +53,7 @@
     <ClInclude Include="include\Mesh.hpp" />
     <ClInclude Include="include\MeshLayout.hpp" />
     <ClInclude Include="include\Monitor.hpp" />
-    <ClInclude Include="include\Rect.hpp" />
+    <ClInclude Include="include\Maths\Rect.hpp" />
     <ClInclude Include="include\RenderTarget.hpp" />
     <ClInclude Include="include\RenderTexture.hpp" />
     <ClInclude Include="include\RestrictedSpan.hpp" />

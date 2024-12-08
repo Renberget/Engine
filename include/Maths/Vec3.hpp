@@ -10,7 +10,7 @@ struct Vec3
 	constexpr Vec3(T x, T y, T z) : x(x), y(y), z(z) {}
 	constexpr Vec3(const Vec2<T>& xy, T z) : x(xy.x), y(xy.y), z(z) {}
 	constexpr Vec3(T x, const Vec2<T>& yz) : x(x), y(yz.y), z(yz.z) {}
-	template<typename U>
+	template<Arithmetic U>
 	constexpr Vec3(const Vec3<U>& other) :
 		x(static_cast<T>(other.x)),
 		y(static_cast<T>(other.y)),

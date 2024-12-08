@@ -5,6 +5,7 @@ namespace input
 	ActionInstance::ActionInstance(const std::shared_ptr<Action>& action) :
 		mAction(action),
 		mValue(action->type),
+		mModifiedValue(action->type),
 		mChanged(false) {}
 
 	const std::shared_ptr<Action>& ActionInstance::action() const
@@ -14,7 +15,7 @@ namespace input
 
 	const ActionValue& ActionInstance::value() const
 	{
-		return mValue;
+		return mModifiedValue;
 	}
 
 	Event& ActionInstance::callback()
@@ -33,7 +34,8 @@ namespace input
 		if (mChanged)
 		{
 			mChanged = false;
-			mCallback(mAction->applyModifiers(mValue));
+			mModifiedValue = mAction->applyModifiers(mValue);
+			mCallback(mModifiedValue);
 		}
 	}
 }

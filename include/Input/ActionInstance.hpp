@@ -1,6 +1,5 @@
 #pragma once
 #include "ActionValue.hpp"
-#include <span>
 
 namespace input
 {
@@ -22,6 +21,7 @@ namespace input
 		std::shared_ptr<Action> mAction;
 		Event mCallback;
 		ActionValue mValue;
+		ActionValue mModifiedValue;
 		bool mChanged;
 
 		friend class Map;

@@ -1,6 +1,7 @@
 #pragma once
 #include "ActionInstance.hpp"
 #include <unordered_map>
+#include <span>
 
 namespace input
 {
@@ -24,15 +25,31 @@ namespace input
 		 * @param modifiers All the modifiers for this mapping
 		 * @return The created mapping, is nullptr if the binding was already present
 		 */
+		Mapping* add(const Binding& binding, const std::shared_ptr<Action>& action, std::initializer_list<const std::shared_ptr<IModifier>> modifiers);
+		/*!
+		 * @brief Maps binding to action
+		 * @param binding Can be bound to one action per map
+		 * @param action Can be bound once per map
+		 * @param modifiers All the modifiers for this mapping
+		 * @return The created mapping, is nullptr if the binding was already present
+		 */
 		Mapping* add(const Binding& binding, const std::shared_ptr<Action>& action, std::span<const std::shared_ptr<IModifier>> modifiers = {});
 		/*!
 		* @brief Adds a new mapping to an actionInstance, it will not be added if the mapping already exists
 		* @param instance The instance to map
 		* @param binding The new binding
 		* @param modifiers The mapping modifiers
-		* @return true if the mapping was added
+		* @return The created mapping, is nullptr if the binding was already present
 		*/
-		bool addMapping(ActionInstance& instance, const Binding& binding, std::span<const std::shared_ptr<IModifier>> modifiers = {});
+		Mapping* addMapping(ActionInstance& instance, const Binding& binding, std::initializer_list<const std::shared_ptr<IModifier>> modifiers);
+		/*!
+		* @brief Adds a new mapping to an actionInstance, it will not be added if the mapping already exists
+		* @param instance The instance to map
+		* @param binding The new binding
+		* @param modifiers The mapping modifiers
+		* @return The created mapping, is nullptr if the binding was already present
+		*/
+		Mapping* addMapping(ActionInstance& instance, const Binding& binding, std::span<const std::shared_ptr<IModifier>> modifiers = {});
 		/*!
 		* @brief Modify the binding of a mapping, oldBinding must exist and new binding must not
 		* @oldBinding The binding of the mapping that will be changed
