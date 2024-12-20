@@ -1,115 +1,64 @@
 #pragma once
 #include <cmath>
 #include <cstdint>
+#include <array>
 
 template<typename T>
-concept Arithmetic = std::is_arithmetic_v<T>;
+concept arithmetic = std::is_arithmetic_v<T>;
 
-template<Arithmetic T>
+template<arithmetic T>
 struct Vec2
 {
-	static const Vec2 Zero;
+	constexpr static size_t N = 2;
+
+	[[nodiscard]] consteval static Vec2<T> zero()
+	{
+		return Vec2<T>(static_cast<T>(0));
+	}
+	
+	[[nodiscard]] consteval static Vec2<T> one()
+	{
+		return Vec2<T>(static_cast<T>(1));
+	}
 
 	constexpr Vec2() = default;
 	constexpr Vec2(T x, T y) : x(x), y(y) {}
-	template<Arithmetic U>
-	constexpr Vec2(const Vec2<U>& other) :
+	constexpr explicit Vec2(T xy) : x(xy), y(xy) {}
+	template<arithmetic U>
+	constexpr explicit Vec2(const Vec2<U>& other) :
 		x(static_cast<T>(other.x)),
-		y(static_cast<T>(other.y)) {}
+		y(static_cast<T>(other.y))
+	{}
 
-	[[nodiscard]] T sqrLength() const
-	{
-		return x * x + y * y;
-	}
-	[[nodiscard]] T length() const
-	{
-		return std::sqrt(sqrLength());
-	}
-	[[nodiscard]] T dot(const Vec2<T>& pos) const
-	{
-		return x * pos.x + y * pos.y;
-	}
-	[[nodiscard]] T distanceTo(const Vec2<T>& pos) const
-	{
-		T distanceX = x - pos.x;
-		T distanceY = y - pos.y;
-		return std::sqrt(distanceX * distanceX + distanceY * distanceY);
-	}
-	//A length of 0 is safe
-	Vec2<T>& normalize()
-	{
-		T l = length();
-		if (l == 0.0)
-		{
-			x = 0.0;
-			y = 0.0;
-			return *this;
-		}
-		x /= l;
-		y /= l;
-		return *this;
-	}
-	[[nodiscard]] Vec2<T> normalized() const
-	{
-		return Vec2<T>(*this).normalize();
-	}
-	[[nodiscard]] Vec2<T> operator+(const Vec2<T>& other) const
-	{
-		return { x + other.x, y + other.y };
-	}
-	[[nodiscard]] Vec2<T> operator-(const Vec2<T>& other) const
-	{
-		return { x - other.x, y - other.y };
-	}
-	Vec2<T>& operator+=(const Vec2<T>& other)
-	{
-		x += other.x;
-		y += other.y;
-		return *this;
-	}
-	Vec2<T>& operator-=(const Vec2<T>& other)
-	{
-		x -= other.x;
-		y -= other.y;
-		return *this;
-	}
-	[[nodiscard]] bool operator==(const Vec2<T>& other) const
-	{
-		return x == other.x && y == other.y;
-	}
-	[[nodiscard]] bool operator!=(const Vec2<T>& other) const
-	{
-		return x != other.x || y != other.y;
-	}
-	Vec2<T>& operator*=(T factor)
-	{
-		x *= factor;
-		y *= factor;
-		return *this;
-	}
-	[[nodiscard]] Vec2<T> operator-() const
-	{
-		return { -x, -y };
-	}
+	[[nodiscard]] T sqrLength() const;
+	[[nodiscard]] T length() const;
+	[[nodiscard]] T dot(const Vec2<T>& other) const;
+	[[nodiscard]] T distanceTo(const Vec2<T>& other) const;
+	//A length of 0 will throw
+	Vec2<T>& unsafeNormalize();
+	//A length of 0 will throw
+	[[nodiscard]] Vec2<T> unsafeNormalized() const;
+	//A length of 0 does nothing
+	Vec2<T>& safeNormalize();
+	//A length of 0 will return zero vector
+	[[nodiscard]] Vec2<T> safeNormalized() const;
+	[[nodiscard]] T& operator[](size_t index);
+	[[nodiscard]] const T& operator[](size_t index) const;
+	[[nodiscard]] Vec2<T> operator-() const;
+	Vec2<T>& operator+=(const Vec2<T>& other);
+	Vec2<T>& operator-=(const Vec2<T>& other);
+	Vec2<T>& operator*=(const Vec2<T>& other);
+	Vec2<T>& operator/=(const Vec2<T>& other);
+	Vec2<T>& operator+=(T factor);
+	Vec2<T>& operator-=(T factor);
+	Vec2<T>& operator*=(T factor);
+	Vec2<T>& operator/=(T factor);
 	
 	T x;
 	T y;
 };
 
-template<Arithmetic T>
-const Vec2<T> Vec2<T>::Zero(0, 0);
-
-template<Arithmetic T>
-[[nodiscard]] Vec2<T> operator*(const Vec2<T>& vec, T factor)
-{
-	return { vec.x * factor, vec.y * factor };
-}
-
-template<Arithmetic T>
-[[nodiscard]] Vec2<T> operator*(T factor, const Vec2<T>& vec)
-{
-	return { vec.x * factor, vec.y * factor };
-}
+#include "Vec2.inl"
 
 using Vec2f = Vec2<float_t>;
 using Vec2d = Vec2<double_t>;

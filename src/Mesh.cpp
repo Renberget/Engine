@@ -24,26 +24,17 @@ Mesh& Mesh::operator=(Mesh&& mesh) noexcept
 
 void Mesh::create(const MeshLayout& vertexLayout)
 {
-	mVertices.bind();
-	if (!mId)
-		glGenVertexArrays(1, &mId);
-	glBindVertexArray(mId);
-	vertexLayout.registerAttribs(MeshLayout::Usage::Vertex);
-	mIndices.bind();
-	glBindVertexArray(0);
+	assert(!mId);
+	glCreateVertexArrays(1, &mId);
+	vertexLayout.registerAttribs(mId, mVertices.id(), MeshLayout::Usage::Vertex);
+	if (mIndices.id())
+		glVertexArrayElementBuffer(mId, mIndices.id());
 }
 
 void Mesh::create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout)
 {
-	mVertices.bind();
-	if (!mId)
-		glGenVertexArrays(1, &mId);
-	glBindVertexArray(mId);
-	vertexLayout.registerAttribs(MeshLayout::Usage::Vertex);
-	mIndices.bind();
-	mInstances.bind();
-	instanceLayout.registerAttribs(MeshLayout::Usage::Instance, &vertexLayout);
-	glBindVertexArray(0);
+	create(vertexLayout);
+	instanceLayout.registerAttribs(mId, mInstances.id(), MeshLayout::Usage::Instance, &vertexLayout);
 }
 
 Mesh::~Mesh()
@@ -71,15 +62,14 @@ ArrayBuffer& Mesh::instances()
 	return mInstances;
 }
 
-uint32_t Mesh::id() const
-{
-	return mId;
-}
-
 void Mesh::draw() const
 {
+	draw(mInstances.size() ? static_cast<GLsizei>(mInstances.size()) : 1);
+}
+
+void Mesh::draw(int instanceCount) const
+{
 	glBindVertexArray(mId);
-	GLsizei instanceCount = mInstances.size() ? static_cast<GLsizei>(mInstances.size()) : 1;
 	if (mIndices.id())
 	{
 		assert(mIndices.storedType() == typeid(uint8_t) || mIndices.storedType() == typeid(uint16_t) || mIndices.storedType() == typeid(uint32_t));

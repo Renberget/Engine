@@ -21,7 +21,9 @@ public:
 	Mesh(Mesh&& mesh) noexcept;
 	Mesh& operator=(Mesh&& mesh) noexcept;
 	~Mesh();
+	//Creates the mesh, the used buffers must be created before
 	void create(const MeshLayout& vertexLayout);
+	//Creates the mesh, the used buffers must be created before
 	void create(const MeshLayout& vertexLayout, const MeshLayout& instanceLayout);
 	//Set the mesh primitive
 	void setPrimitive(Primitive primitive);
@@ -33,16 +35,15 @@ public:
 	//Returns the instances buffer
 	[[nodiscard]] ArrayBuffer& instances();
 	//Returns the OpenGL handle
-	[[nodiscard]] uint32_t id() const;
+	[[nodiscard]] inline uint32_t id() const { return mId; }
+	//Draws the mesh on the currently bound target, prefer the draw function of RenderTexture
+	void draw() const;
+	void draw(int instanceCount) const;
 
 private:
-	void draw() const;
-
 	IndicesBuffer mIndices;
 	ArrayBuffer mVertices;
 	ArrayBuffer mInstances;
 	Primitive mPrimitive = Primitive::Triangles;
 	uint32_t mId = 0;
-
-	friend class RenderTarget;
 };

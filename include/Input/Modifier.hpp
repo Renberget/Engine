@@ -1,5 +1,5 @@
 #pragma once
-#include "Maths/Vec2.hpp"
+#include "Maths/Math.hpp"
 
 namespace input
 {

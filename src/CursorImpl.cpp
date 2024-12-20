@@ -5,9 +5,9 @@ Cursor::Impl::Impl(const Image& image, const Vec2i& hotspot)
 	const Vec2i& size = image.size();
 	const GLFWimage glfwImage
 	{
-		size.x,
-		size.y,
-		const_cast<uint8_t*>(image.pixels<uint8_t>().data())
+		.width = size.x,
+		.height = size.y,
+		.pixels = const_cast<uint8_t*>(image.pixels<uint8_t>().data())
 	};
 	mHandle = glfwCreateCursor(&glfwImage, hotspot.x, hotspot.y);
 }

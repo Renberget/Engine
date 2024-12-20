@@ -2,26 +2,40 @@
 #include "Buffer.hpp"
 #include "Type.hpp"
 
+
+template<typename T>
+concept buffer_index = std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t>;
+
 class IndicesBuffer : public Buffer
 {
 public:
-	IndicesBuffer() : Buffer(BufferType::IndicesArray, typeid(uint16_t)) {}
-	template<typename T>
-	IndicesBuffer(std::span<const T> indices, Usage usage) : Buffer(BufferType::IndicesArray)
+	IndicesBuffer() : Buffer() {}
+	template<buffer_index T>
+	void create(size_t size, Flags<BufferFlags> flags = {})
 	{
-		create(indices, usage);
+		Buffer::create<T>(size, flags);
 	}
-	template<typename T, typename = std::enable_if_t<std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t>>>
-	void create(std::span<const T> indices, Usage usage)
+	template<buffer_index T>
+	void create(std::initializer_list<T> indices, Flags<BufferFlags> flags = {})
 	{
-		Buffer::create(indices, usage);
+		Buffer::create(indices, flags);
 	}
-	template<typename T>
+	template<buffer_index T>
+	void create(std::span<const T> indices, Flags<BufferFlags> flags = {})
+	{
+		Buffer::create(indices, flags);
+	}
+	template<buffer_index T>
+	void update(std::initializer_list<T> indices, size_t offset = 0)
+	{
+		Buffer::update(indices, offset);
+	}
+	template<buffer_index T>
 	void update(std::span<const T> indices, size_t offset = 0)
 	{
 		Buffer::update(indices, offset);
 	}
-	template<typename T, Access A>
+	template<buffer_index T, Access A>
 	RestrictedSpan<T, A> map()
 	{
 		return Buffer::map<T, A>();

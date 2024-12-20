@@ -1,5 +1,5 @@
 #pragma once
-#include "Maths/Vec2.hpp"
+#include "Maths/Math.hpp"
 #include "Utils/Uncopyable.hpp"
 #include <string_view>
 #include <vector>

@@ -1,72 +1,67 @@
 ﻿#pragma once
-#include "Vec3.hpp"
-#include "Maths.hpp"
+#include "Mat.hpp"
+#include <numbers>
 
-template<typename T = float, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-class Quat
+template<std::floating_point T>
+struct Quat
 {
-public:
-    constexpr Quat() : mX(0.0), mY(0.0), mZ(0.0), mW(1.0) {}
-    constexpr Quat(T roll, T pitch, T yaw)
-    {
-        T cosRoll = std::cos(0.5 * roll);
-        T sinRoll = std::sin(0.5 * roll);
-        T cosPitch = std::cos(0.5 * pitch);
-        T sinPitch = std::sin(0.5 * pitch);
-        T cosYaw = std::cos(0.5 * yaw);
-        T sinYaw = std::sin(0.5 * yaw);
+    static const Quat<T> Identity;
 
-        mW = cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw;
-        mX = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;
-        mY = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
-        mZ = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
-    }
-    constexpr Quat(const Vec3<T>& eulerAngles) : Quat(eulerAngles.x, eulerAngles.y, eulerAngles.z) {}
-    [[nodiscard]] Vec3<T> toEuler() const
+    [[nodiscard]] consteval static Quat<T> identity()
     {
-        T a = 2.0 * (mW * mY - mX * mZ);
-        return
-        {
-            std::atan2(2.0 * (mW * mX + mY * mZ), 2.0 * (mX * mX + mY * mY)),
-            2.0 * std::atan2(std::sqrt(1.0 + a), std::sqrt(1.0 - a)) - static_cast<T>(maths::HalfPi),
-            std::atan2(2.0 * (mW * mZ + mX * mY), 1.0 - 2.0 * (mY * mY + mZ * mZ))
-        };
-    }
-    [[nodiscard]] T dot(const Quat<T>& other) const
-    {
-        return mX * other.mX + mY * other.mY + mZ * other.mZ + mW * other.mW;
-    }
-    Quat& normalize()
-    {
-        T length = std::sqrt(mX * mX + mY * mY + mZ * mZ + mW * mW);
-        mX /= length;
-        mY /= length;
-        mZ /= length;
-        mW /= length;
-        return *this;
-    }
-    [[nodiscard]] Quat<T> normalized() const
-    {
-        Quat<T> result = *this;
-        T length = std::sqrt(mX * mX + mY * mY + mZ * mZ + mW * mW);
-        result.mX /= result;
-        result.mY /= result;
-        result.mZ /= result;
-        result.mW /= result;
-        return result;
-    }
-    [[nodiscard]] bool operator==(const Quat<T>& other) const
-    {
-        return mX == other.mX && mY == other.mY && mZ == other.mZ && mW == other.mW;
-    }
-    [[nodiscard]] bool operator!=(const Quat<T>& other) const
-    {
-        return mX != other.mX || mY != other.mY || mZ != other.mZ || mW != other.mW;
+        return Quat<T>(static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1));
     }
 
-private:
-    T mX;
-    T mY;
-    T mZ;
-    T mW;
+    constexpr Quat() = default;
+    constexpr Quat(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+    //Makes a quaternion from euler angles
+    constexpr Quat(const Vec3<T>& eulerAngles);
+    //Makes a quaternion from a normalized axis and an angle
+    constexpr explicit Quat(const Vec3<T>& axis, T angle);
+    constexpr explicit Quat(const Mat<3, 3, T>& rotationMatrix);
+    template<std::floating_point U>
+    constexpr explicit Quat(const Quat<U>& other) :
+        x(static_cast<T>(other.x)),
+        y(static_cast<T>(other.y)),
+        z(static_cast<T>(other.z)),
+        w(static_cast<T>(other.w))
+    {}
+
+    [[nodiscard]] Vec3<T> euler() const;
+    [[nodiscard]] Mat<3, 3, T> rotationMatrix() const;
+    [[nodiscard]] T sqrLength() const;
+    [[nodiscard]] T length() const;
+    [[nodiscard]] T dot(const Quat<T>& other) const;
+
+    //A length of 0 will throw
+    Quat<T>& unsafeNormalize();
+    //A length of 0 will throw
+    [[nodiscard]] Quat<T> unsafeNormalized() const;
+    //A length of 0 does nothing
+    Quat<T>& safeNormalize();
+    //A length of 0 is safe
+    [[nodiscard]] Quat<T> safeNormalized() const;
+
+    //A length of 0 will throw
+    Quat<T>& unsafeInvert();
+    //A length of 0 will throw
+    [[nodiscard]] Quat<T> unsafeInverse() const;
+    //A length of 0 is safe
+    Quat<T>& safeInvert();
+    //A length of 0 is safe
+    [[nodiscard]] Quat<T> safeInverse() const;
+
+    [[nodiscard]] Quat<T> operator-() const;
+    Quat<T>& operator*=(const Quat<T>& other);
+    Quat<T>& operator*=(T factor);
+
+    T x;
+    T y;
+    T z;
+    T w;
 };
+
+#include "Quat.inl"
+
+using Quatf = Quat<float_t>;
+using Quadd = Quat<double_t>;

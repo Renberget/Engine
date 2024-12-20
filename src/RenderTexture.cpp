@@ -34,19 +34,16 @@ RenderTexture::~RenderTexture()
 
 void RenderTexture::create(const Vec2i& size, Texture::Format format, std::optional<Texture::DepthStencilFormat> depthStencilFormat, bool enableMSAA)
 {
-	if (!mFramebufferId)
-		glGenFramebuffers(1, &mFramebufferId);
-	glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
+	assert(!mFramebufferId);
+	glCreateFramebuffers(1, &mFramebufferId);
 	
 	mTexture.create(size, format, enableMSAA);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, enableMSAA ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, mTexture.id(), 0);
+	glNamedFramebufferTexture(mFramebufferId, GL_COLOR_ATTACHMENT0, enableMSAA ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 0);
 	
 	if (depthStencilFormat.has_value())
 	{
-		if (!mRenderbufferId)
-			glGenRenderbuffers(1, &mRenderbufferId);
-		glBindRenderbuffer(GL_RENDERBUFFER, mRenderbufferId);
-		glRenderbufferStorage(GL_RENDERBUFFER, static_cast<GLenum>(depthStencilFormat.value()), size.x, size.y);
+		glCreateRenderbuffers(1, &mRenderbufferId);
+		glNamedRenderbufferStorage(mRenderbufferId, static_cast<GLenum>(depthStencilFormat.value()), size.x, size.y);
 		GLenum attachment;
 		switch (depthStencilFormat.value())
 		{
@@ -62,12 +59,36 @@ void RenderTexture::create(const Vec2i& size, Texture::Format format, std::optio
 		default:
 			throw std::runtime_error("Invalid depth stencil format");
 		}
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, mRenderbufferId);
+		glNamedFramebufferRenderbuffer(mFramebufferId, attachment, GL_RENDERBUFFER, mRenderbufferId);
 	}
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if (glCheckNamedFramebufferStatus(mFramebufferId, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		throw std::runtime_error("Failed to create framebuffer");
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderTexture::setViewport(const IntRect& rect)
+{
+	glViewport(rect.x, rect.y, rect.w, rect.h);
+}
+
+void RenderTexture::setScissor(const IntRect& rect)
+{
+	glScissor(rect.x, rect.y, rect.w, rect.h);
+}
+
+void RenderTexture::clear(const Color& color)
+{
+	glClearNamedFramebufferfv(mFramebufferId, GL_COLOR, 0, reinterpret_cast<const GLfloat*>(&color));
+}
+
+void RenderTexture::clearDepth(float depth)
+{
+	glClearNamedFramebufferfv(mFramebufferId, GL_DEPTH, 0, &depth);
+}
+
+void RenderTexture::clearStencil(int stencil)
+{
+	glClearNamedFramebufferiv(mFramebufferId, GL_STENCIL, 0, &stencil);
 }
 
 void RenderTexture::blit(Window& dstWindow) const
@@ -86,29 +107,23 @@ void RenderTexture::blit(RenderTexture& dstRenderTexture) const
 
 void RenderTexture::blit(Window& dstWindow, const IntRect& srcRect, const IntRect& dstRect) const
 {
-	dstWindow.bind();
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, mFramebufferId);
-	glBlitFramebuffer(srcRect.x, srcRect.y, srcRect.w, srcRect.h, dstRect.x, dstRect.y, dstRect.w, dstRect.h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBlitNamedFramebuffer(mFramebufferId, 0, srcRect.x, srcRect.y, srcRect.w, srcRect.h, dstRect.x, dstRect.y, dstRect.w, dstRect.h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 void RenderTexture::blit(RenderTexture& dstRenderTexture, const IntRect& srcRect, const IntRect& dstRect) const
 {
-	dstRenderTexture.bind();
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, mFramebufferId);
-	glBlitFramebuffer(srcRect.x, srcRect.y, srcRect.w, srcRect.h, dstRect.x, dstRect.y, dstRect.w, dstRect.h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBlitNamedFramebuffer(mFramebufferId, dstRenderTexture.id(), srcRect.x, srcRect.y, srcRect.w, srcRect.h, dstRect.x, dstRect.y, dstRect.w, dstRect.h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+void RenderTexture::draw(const Mesh& mesh, const Shader& shader, const Blending& blending)
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFramebufferId);
+	blending.bind();
+	shader.bind();
+	mesh.draw();
 }
 
 const Texture& RenderTexture::texture() const
 {
 	return mTexture;
-}
-
-uint32_t RenderTexture::id() const
-{
-	return mFramebufferId;
-}
-
-void RenderTexture::bind()
-{
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFramebufferId);
 }

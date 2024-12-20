@@ -1,5 +1,4 @@
 #include "WindowImpl.hpp"
-#include "Glfw.hpp"
 
 Window::Window(const CreateInfo& info)
 {
@@ -48,9 +47,10 @@ void Window::swapBuffers()
 	mImpl->swapBuffers();
 }
 
-void Window::bind()
+void Window::draw(const Mesh& mesh, const Shader& shader, const Blending& blending)
 {
-	mImpl->bind();
+	glfwMakeContextCurrent(mImpl->handle());
+	RenderTexture::draw(mesh, shader, blending);
 }
 
 bool Window::shouldClose() const

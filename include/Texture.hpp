@@ -1,8 +1,7 @@
 #pragma once
 #include "Maths/Vec2.hpp"
-#include "Type.hpp"
 #include "Utils/Uncopyable.hpp"
-#include <string_view>
+#include <filesystem>
 
 class Image;
 
@@ -37,27 +36,36 @@ public:
 	{
 		Depth16 = 0x81A5,
 		Depth24 = 0x81A6,
-		Depth32F = 0x81A7,
+		Depth32 = 0x81A7,
+		Depth32F = 0x8CAC,
 		Depth24Stencil8 = 0x88F0,
-		Depth32FStencil8 = 0x8CAD
+		Depth32FStencil8 = 0x8CAD,
+		StencilIndex1 = 0x8D46,
+		StencilIndex4 = 0x8D47,
+		StencilIndex8 = 0x8D48,
+		StencilIndex16 = 0x8D49
 	};
 
 	Texture() = default;
 	Texture(Texture&& texture) noexcept;
 	Texture& operator=(Texture&& texture) noexcept;
 	//Creates texture from file
-	explicit Texture(std::string_view filePath);
+	explicit Texture(const std::filesystem::path& path, int mipmapCount = 1);
 	//Creates texture from image (CPU memory)
-	explicit Texture(const Image& image);
+	explicit Texture(const Image& image, int mipmapCount = 1);
 	//Creates texture with uninitialized data
-	explicit Texture(const Vec2i& size, Format format, bool enableMSAA = false);
+	explicit Texture(const Vec2i& size, Format format, int mipmapCount = 1);
+	//Creates texture with uninitialized data
+	explicit Texture(const Vec2i& size, Format format, bool enableMSAA);
 	~Texture();
 	//Creates texture from file
-	void create(std::string_view filePath);
+	void create(const std::filesystem::path& path, int mipmapCount = 1);
 	//Creates texture from image (CPU memory)
-	void create(const Image& image);
+	void create(const Image& image, int mipmapCount = 1);
 	//Creates texture with uninitialized data
-	void create(const Vec2i& size, Format format, bool enableMSAA = false);
+	void create(const Vec2i& size, Format format, int mipmapCount = 1);
+	//Creates texture with uninitialized data
+	void create(const Vec2i& size, Format format, bool enableMSAA);
 	//Updates texture content from image data
 	void update(const Image& image, const Vec2i& offset = {}, int mipmapLevel = 0);
 	//Returns the texture 2D size
@@ -70,18 +78,15 @@ public:
 	void generateMipmap();
 	//Returns the texture format
 	[[nodiscard]] Format format() const;
-	//Set texture as target for operations
-	void bind() const;
 	//Returns the OpenGL handle
-	[[nodiscard]] uint32_t id() const;
+	[[nodiscard]] inline uint32_t id() const { return mId; }
 
 private:
 	[[nodiscard]] int32_t getInternalFormat() const;
-	void create(const void* pixels, bool enableMSAA = false);
 
-	Vec2i mSize = Vec2i::Zero;
+	Vec2i mSize = Vec2i::zero();
 	uint32_t mId = 0;
-	uint32_t mType = -1;
 	Format mFormat = Format::RGBA;
+	bool mEnableMSAA = false;
 };
 

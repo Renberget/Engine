@@ -1,22 +1,26 @@
 #include <Engine.hpp>
 
 constexpr const char* VertexCode = "\
-#version 330 core\n\
+#version 460 core\n\
 \n\
 layout (location = 0) in vec2 iPos;\n\
 layout (location = 1) in vec2 iUv;\n\
 \n\
 out vec2 uv;\n\
 \n\
+uniform mat4 projection;\n\
+uniform mat4 view;\n\
+uniform mat3 model;\n\
+\n\
 void main()\n\
 {\n\
 	uv = iUv;\n\
-	gl_Position = vec4(iPos, 0.0, 1.0);\n\
+	gl_Position = projection * view * vec4(model * vec3(iPos, 1.0), 1.0);\n\
 }\n\
 ";
 
 constexpr const char* FragmentCode = "\
-#version 330 core\n\
+#version 460 core\n\
 \n\
 in vec2 uv;\n\
 \n\
@@ -46,31 +50,48 @@ int main()
 	Texture texture("sprite.png");
 	texture.setFilters(Texture::Nearest, Texture::Nearest);
 
-	Shader shader;
-	shader.createFromData(VertexCode, FragmentCode);
+	GlslShader shader;
+	shader.createFromCode(VertexCode, FragmentCode);
 	shader.setUniform("texture", texture);
 
 	MeshLayout layout;
-	layout.add<Vec2f, Vec2f>();
+	layout.create<PosUv, &PosUv::pos, &PosUv::uv>();
 
-	FloatRect spriteRect(-0.25f, -0.25f, 0.5f, 0.5f);
+	Vec2f windowSize = Vec2f(window.getSize());
+
+	Mat4f projection = math::ortho(0.f, windowSize.x, 0.f, windowSize.y, 0.1f, 10.f);
+	Transform3f view(Vec3f(0.5f * windowSize.x, 0.5f * windowSize.y, -5.f));
+	Transform2f model = Transform2f::identity();
+
+	shader.setUniform("projection", projection);
+	shader.setUniform("view", view);
+
+	FloatRect spriteRect(-50.f, -50.f, 100.f, 100.f);
 
 	Mesh mesh;
-	mesh.vertices().create<PosUv>(std::array<PosUv, 4>
-	{
-		PosUv{ { spriteRect.x, spriteRect.endY() }, { 0.f, 0.f } },
-			PosUv{ { spriteRect.endX(), spriteRect.endY() }, { 1.f, 0.f } },
-			PosUv{ { spriteRect.endX(), spriteRect.y }, { 1.f, 1.f } },
-			PosUv{ { spriteRect.x, spriteRect.y }, { 0.f, 1.f } }
-	}, Usage::Static);
-	mesh.indices().create<uint16_t>(std::array<uint16_t, 6>
-	{
-		0, 1, 2, 2, 3, 0
-	}, Usage::Static);
+	mesh.vertices().create<PosUv>(
+		{
+			{ .pos = { spriteRect.x, spriteRect.endY() }, .uv = { 0.f, 0.f } },
+			{ .pos = { spriteRect.endX(), spriteRect.endY() }, .uv = { 1.f, 0.f } },
+			{ .pos = { spriteRect.endX(), spriteRect.y }, .uv = { 1.f, 1.f } },
+			{ .pos = { spriteRect.x, spriteRect.y }, .uv = { 0.f, 1.f } }
+		});
+	mesh.indices().create<uint16_t>(
+		{
+			0, 1, 2, 2, 3, 0
+		});
 	mesh.create(layout);
 
+	Clock clock;
 	while (!window.shouldClose())
 	{
+		float seconds = clock.getSeconds();
+
+		model.setRotation(2.f * seconds);
+		model.setPosition(100.f * Vec2f(cos(seconds), sin(seconds)));
+		model.setScale(1.f + 0.5f * sin(seconds));
+		shader.setUniform("model", model);
+
 		window.clear();
 		window.draw(mesh, shader);
 		window.swapBuffers();

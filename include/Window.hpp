@@ -7,16 +7,18 @@
 #include "RenderTexture.hpp"
 
 //A desktop window
-class Window : public RenderTarget, public Uncopyable
+class Window : public RenderTexture
 {
 public:
-	enum class CreateFlag : uint8_t
+	enum CreateFlag : uint8_t
 	{
 		None =			0,
-		Blending =		1 << 0,
-		DepthTest =		1 << 1,
-		StencilTest =	1 << 2,
-		MSAA =			1 << 3
+		PrintDebug =	1 << 0,
+		Blend =			1 << 1,
+		Scissor =		1 << 2,
+		DepthTest =		1 << 3,
+		StencilTest =	1 << 4,
+		MSAA =			1 << 5
 	};
 
 	struct CreateInfo
@@ -26,12 +28,12 @@ public:
 		Monitor* monitor = nullptr;
 		Window* share = nullptr;
 		CullMode cullMode = CullMode::None;
-		Flags<CreateFlag> flags = CreateFlag::Blending;
+		Flags<CreateFlag> flags = CreateFlag::Blend;
 	};
 
 	Window() = default;
 	explicit Window(const CreateInfo& info);
-	~Window() override;
+	~Window();
 	
 	//Creates new window
 	void create(const CreateInfo& info);
@@ -50,8 +52,8 @@ public:
 
 	//Swaps the front and back buffer and display everything drawn since last swap
 	void swapBuffers();
-	//Binds the window as current render target
-	void bind() override;
+	//Draws a mesh
+	void draw(const Mesh& mesh, const Shader& shader, const Blending& blending = Blending::Alpha);
 
 	//Indicate whether the window should close or not 
 	bool shouldClose() const;

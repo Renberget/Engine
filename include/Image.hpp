@@ -19,22 +19,22 @@ public:
 	Image(Image&& image) noexcept;
 	Image& operator=(Image&& image) noexcept;
 	//Creates image from file
-	explicit Image(std::string_view filePath);
-	//Creates image from texture (GPU memory)
+	explicit Image(const std::filesystem::path& path);
+	//Creates image from texture (OpenGL memory)
 	explicit Image(const Texture& texture);
 	//Creates image with uninitialized memory
 	explicit Image(const Vec2i& size, Texture::Format format);
 	~Image();
 	//Creates image from file
-	void create(std::string_view filePath);
-	//Creates image from texture (GPU memory)
+	void create(const std::filesystem::path& path);
+	//Creates image from texture (OpenGL memory)
 	void create(const Texture& texture);
 	//Creates image with uninitialized memory
 	void create(const Vec2i& size, Texture::Format format);
 	//Update pixels from texture (sizes must match)
 	void update(const Texture& texture);
 	//Save image to file
-	void save(std::string_view filePath, FileFormat format) const;
+	void save(const std::filesystem::path& path, FileFormat format) const;
 	//Returns the image 2D size
 	[[nodiscard]] const Vec2i& size() const;
 
@@ -183,7 +183,7 @@ public:
 	[[nodiscard]] Texture::Format format() const;
 
 private:
-	Vec2i mSize = Vec2i::Zero;
+	Vec2i mSize = Vec2i::zero();
 	uint8_t* mPixels = nullptr;
 	Texture::Format mFormat = Texture::Format::RGBA;
 };

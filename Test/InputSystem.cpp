@@ -1,7 +1,7 @@
 #include <Engine.hpp>
 
 constexpr const char* VertexCode = "\
-#version 330 core\n\
+#version 460 core\n\
 \n\
 layout (location = 0) in vec2 iPos;\n\
 layout (location = 1) in vec2 iUv;\n\
@@ -18,7 +18,7 @@ void main()\n\
 ";
 
 constexpr const char* FragmentCode = "\
-#version 330 core\n\
+#version 460 core\n\
 \n\
 in vec2 uv;\n\
 \n\
@@ -48,28 +48,28 @@ int main()
 	Texture texture("sprite.png");
 	texture.setFilters(Texture::Nearest, Texture::Nearest);
 
-	Shader shader;
-	shader.createFromData(VertexCode, FragmentCode);
+	GlslShader shader;
+	shader.createFromCode(VertexCode, FragmentCode);
 	shader.setUniform("texture", texture);
 
 	MeshLayout layout;
-	layout.add<Vec2f, Vec2f>();
+	layout.create<PosUv, &PosUv::pos, &PosUv::uv>();
 
-	Vec2f spritePos = Vec2f::Zero;
+	Vec2f spritePos = Vec2f::zero();
 	FloatRect spriteRect(-0.25f, -0.25f, 0.5f, 0.5f);
 
 	Mesh mesh;
-	mesh.vertices().create<PosUv>(std::array<PosUv, 4>
-	{
-		PosUv{ { spriteRect.x, spriteRect.endY() }, { 0.f, 0.f } },
-			PosUv{ { spriteRect.endX(), spriteRect.endY() }, { 1.f, 0.f } },
-			PosUv{ { spriteRect.endX(), spriteRect.y }, { 1.f, 1.f } },
-			PosUv{ { spriteRect.x, spriteRect.y }, { 0.f, 1.f } }
-	}, Usage::Static);
-	mesh.indices().create<uint16_t>(std::array<uint16_t, 6>
-	{
-		0, 1, 2, 2, 3, 0
-	}, Usage::Static);
+	mesh.vertices().create<PosUv>(
+		{
+			{ .pos = { spriteRect.x, spriteRect.endY() }, .uv = { 0.f, 0.f } },
+			{ .pos = { spriteRect.endX(), spriteRect.endY() }, .uv = { 1.f, 0.f } },
+			{ .pos = { spriteRect.endX(), spriteRect.y }, .uv = { 1.f, 1.f } },
+			{ .pos = { spriteRect.x, spriteRect.y }, .uv = { 0.f, 1.f } }
+		});
+	mesh.indices().create<uint16_t>(
+		{
+			0, 1, 2, 2, 3, 0
+		});
 	mesh.create(layout);
 
 	std::shared_ptr<input::Action> action = std::make_shared<input::Action>(input::Action::Axis2D);

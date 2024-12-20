@@ -26,7 +26,7 @@ public:
 	[[nodiscard]] Delegate<const Vec2i&>& resizeCallback();
 
 	void bind();
-	GLFWwindow* handle();
+	[[nodiscard]] inline GLFWwindow* handle() { return mHandle; }
 	
 	static Impl* getFocusedWindow();
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "Action.hpp"
-#include "Maths/Maths.hpp"
 #include <stdexcept>
 
 namespace input
@@ -26,7 +25,7 @@ namespace input
 				throw std::runtime_error("Wrong action type");
 #endif
 			constexpr float Epsilon = 1.0e-5f;
-			return !(maths::nearlyEquals(mValue.x, 0.f, Epsilon) && maths::nearlyEquals(mValue.y, 0.f, Epsilon));
+			return !(math::nearlyEquals(mValue.x, 0.f, Epsilon) && math::nearlyEquals(mValue.y, 0.f, Epsilon));
 		}
 		template<>
 		float get() const

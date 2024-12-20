@@ -2,6 +2,7 @@
 #include "MonitorImpl.hpp"
 #include "CursorImpl.hpp"
 #include "Input/Impl.hpp"
+#include "Utils/Print.hpp"
 
 Window::Impl* Window::Impl::sFocusedWindow = nullptr;
 
@@ -32,9 +33,9 @@ void Window::Impl::setIcon(const Image& icon)
 	const Vec2i& size = icon.size();
 	const GLFWimage glfwImage
 	{
-		size.x,
-		size.y,
-		const_cast<uint8_t*>(icon.pixels<uint8_t>().data())
+		.width = size.x,
+		.height = size.y,
+		.pixels = const_cast<uint8_t*>(icon.pixels<uint8_t>().data())
 	};
 	glfwSetWindowIcon(mHandle, 1, &glfwImage);
 }
@@ -92,13 +93,7 @@ Delegate<const Vec2i&>& Window::Impl::resizeCallback()
 
 void Window::Impl::bind()
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glfwMakeContextCurrent(mHandle);
-}
-
-GLFWwindow* Window::Impl::handle()
-{
-	return mHandle;
 }
 
 Window::Impl* Window::Impl::getFocusedWindow()
@@ -108,8 +103,8 @@ Window::Impl* Window::Impl::getFocusedWindow()
 
 void Window::Impl::setHints(const CreateInfo& info)
 {
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifndef NDEBUG
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
@@ -154,18 +149,32 @@ void Window::Impl::initWindow(const CreateInfo& info)
 
 void Window::Impl::enableGlCapabilities(const CreateInfo& info)
 {
-	if (info.flags.get(CreateFlag::Blending))
+	if (info.flags.get(CreateFlag::Blend))
 		glEnable(GL_BLEND);
+	if (info.flags.get(CreateFlag::Scissor))
+		glEnable(GL_SCISSOR_TEST);
 	if (info.flags.get(CreateFlag::DepthTest))
 		glEnable(GL_DEPTH_TEST);
 	if (info.flags.get(CreateFlag::StencilTest))
 		glEnable(GL_STENCIL_TEST);
 	if (info.flags.get(CreateFlag::MSAA))
 		glEnable(GL_MULTISAMPLE);
-	if (static_cast<uint32_t>(info.cullMode))
+	if (info.cullMode != CullMode::None)
 	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(static_cast<GLenum>(info.cullMode));
+	}
+	if (info.flags.get(CreateFlag::PrintDebug))
+	{
+		glfwSetErrorCallback([](int error, const char* description)
+			{
+				print(std::string("glfw message : ") + description);
+			});
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+			{
+				print(std::string("OpenGL message : ") + message);
+			}, nullptr);
 	}
 }
 

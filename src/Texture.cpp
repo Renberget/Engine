@@ -4,7 +4,6 @@
 Texture::Texture(Texture&& texture) noexcept :
 	mSize(texture.mSize),
 	mId(texture.mId),
-	mType(texture.mType),
 	mFormat(texture.mFormat)
 {
 	texture.mId = 0;
@@ -14,20 +13,24 @@ Texture& Texture::operator=(Texture&& texture) noexcept
 {
 	mSize = texture.mSize;
 	mId = texture.mId;
-	mType = texture.mType;
 	mFormat = texture.mFormat;
 	texture.mId = 0;
 	return *this;
 }
 
-Texture::Texture(std::string_view filePath)
+Texture::Texture(const std::filesystem::path& path, int mipmapCount)
 {
-	create(filePath);
+	create(path, mipmapCount);
 }
 
-Texture::Texture(const Image& image)
+Texture::Texture(const Image& image, int mipmapCount)
 {
-	create(image);
+	create(image, mipmapCount);
+}
+
+Texture::Texture(const Vec2i& size, Format format, int mipmapCount)
+{
+	create(size, format, mipmapCount);
 }
 
 Texture::Texture(const Vec2i& size, Format format, bool enableMSAA)
@@ -40,34 +43,60 @@ Texture::~Texture()
 	glDeleteTextures(1, &mId);
 }
 
-void Texture::create(std::string_view filePath)
+void Texture::create(const std::filesystem::path& path, int mipmapCount)
 {
-	Image image(filePath);
+	assert(!mId);
+
+	Image image(path);
 	mSize = image.size();
 	mFormat = image.format();
-	create(reinterpret_cast<const void*>(image.data().data()));
+
+	glCreateTextures(GL_TEXTURE_2D, 1, &mId);
+	glTextureStorage2D(mId, mipmapCount, getInternalFormat(), mSize.x, mSize.y);
+	glTextureSubImage2D(mId, 0, 0, 0, mSize.x, mSize.y, static_cast<GLenum>(mFormat), GL_UNSIGNED_BYTE, reinterpret_cast<const void*>(image.data().data()));
 }
 
-void Texture::create(const Image& image)
+void Texture::create(const Image& image, int mipmapCount)
 {
+	assert(!mId);
+
 	mSize = image.size();
 	mFormat = Format::RGBA;
-	create(reinterpret_cast<const void*>(image.data().data()));
+	
+	glCreateTextures(GL_TEXTURE_2D, 1, &mId);
+	glTextureStorage2D(mId, mipmapCount, getInternalFormat(), mSize.x, mSize.y);
+	glTextureSubImage2D(mId, 0, 0, 0, mSize.x, mSize.y, GL_RGBA, GL_UNSIGNED_BYTE, reinterpret_cast<const void*>(image.data().data()));
+}
+
+void Texture::create(const Vec2i& size, Format format, int mipmapCount)
+{
+	assert(!mId);
+
+	mSize = size;
+	mFormat = format;
+	
+	glCreateTextures(GL_TEXTURE_2D, 1, &mId);
+	glTextureStorage2D(mId, mipmapCount, getInternalFormat(), mSize.x, mSize.y);
 }
 
 void Texture::create(const Vec2i& size, Format format, bool enableMSAA)
 {
+	assert(!mId);
+
 	mSize = size;
 	mFormat = format;
-	create(nullptr, enableMSAA);
+	mEnableMSAA = enableMSAA;
+
+	glCreateTextures(enableMSAA ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, 1, &mId);
+	if (enableMSAA)
+		glTextureStorage2DMultisample(mId, 4, getInternalFormat(), mSize.x, mSize.y, GL_TRUE);
 }
 
 void Texture::update(const Image& image, const Vec2i& offset, int mipmapLevel)
 {
-	assert(mType == GL_TEXTURE_2D);
+	assert(!mEnableMSAA);
 	assert(mSize == image.size() && mFormat == image.format());
-	glBindTexture(GL_TEXTURE_2D, mId);
-	glTexSubImage2D(GL_TEXTURE_2D, mipmapLevel, offset.x, offset.y, image.size().x, image.size().y, GL_RGBA, GL_UNSIGNED_BYTE, reinterpret_cast<const void*>(image.pixels<uint8_t>().data()));
+	glTextureSubImage2D(mId, mipmapLevel, offset.x, offset.y, image.size().x, image.size().y, mFormat, GL_UNSIGNED_BYTE, reinterpret_cast<const void*>(image.pixels<uint8_t>().data()));
 }
 
 const Vec2i& Texture::size() const
@@ -77,37 +106,24 @@ const Vec2i& Texture::size() const
 
 void Texture::setWrapping(Wrapping wrapping)
 {
-	glBindTexture(mType, mId);
-	glTexParameteri(mType, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping));
-	glTexParameteri(mType, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping));
+	glTextureParameteri(mId, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping));
+	glTextureParameteri(mId, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping));
 }
 
 void Texture::setFilters(Filter minFilter, Filter magFilter)
 {
-	glBindTexture(mType, mId);
-	glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(minFilter));
-	glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(magFilter));
+	glTextureParameteri(mId, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(minFilter));
+	glTextureParameteri(mId, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(magFilter));
 }
 
 void Texture::generateMipmap()
 {
-	glBindTexture(mType, mId);
-	glGenerateMipmap(mType);
+	glGenerateTextureMipmap(mId);
 }
 
 Texture::Format Texture::format() const
 {
 	return mFormat;
-}
-
-void Texture::bind() const
-{
-	glBindTexture(mType, mId);
-}
-
-uint32_t Texture::id() const
-{
-	return mId;
 }
 
 int32_t Texture::getInternalFormat() const
@@ -126,21 +142,4 @@ int32_t Texture::getInternalFormat() const
 		return GL_RGBA8;
 	}
 	throw std::runtime_error("Invalid format");
-}
-
-void Texture::create(const void* pixels, bool enableMSAA)
-{
-	mType = enableMSAA ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-	if (!mId)
-		glGenTextures(1, &mId);
-	glBindTexture(mType, mId);
-	glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	if (enableMSAA)
-	{
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, getInternalFormat(), mSize.x, mSize.y, GL_TRUE);
-		return;
-	}
-	glTexImage2D(GL_TEXTURE_2D, 0, getInternalFormat(), mSize.x, mSize.y, 0, static_cast<GLenum>(mFormat), GL_UNSIGNED_BYTE, pixels);
 }

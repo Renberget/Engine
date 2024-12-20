@@ -149,7 +149,6 @@ namespace input
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Button>>(Gamepad::Button::DPadRight) == GLFW_GAMEPAD_BUTTON_DPAD_RIGHT);
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Button>>(Gamepad::Button::DPadDown) == GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Button>>(Gamepad::Button::DPadLeft) == GLFW_GAMEPAD_BUTTON_DPAD_LEFT);
-	static_assert(static_cast<std::underlying_type_t<Gamepad::Button>>(Gamepad::Button::EnumEnd) == GLFW_GAMEPAD_BUTTON_LAST + 1);
 
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Axis>>(Gamepad::Axis::LeftAxisX) == GLFW_GAMEPAD_AXIS_LEFT_X);
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Axis>>(Gamepad::Axis::LeftAxisY) == GLFW_GAMEPAD_AXIS_LEFT_Y);
@@ -157,5 +156,4 @@ namespace input
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Axis>>(Gamepad::Axis::RightAxisY) == GLFW_GAMEPAD_AXIS_RIGHT_Y);
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Axis>>(Gamepad::Axis::LeftTrigger) == GLFW_GAMEPAD_AXIS_LEFT_TRIGGER);
 	static_assert(static_cast<std::underlying_type_t<Gamepad::Axis>>(Gamepad::Axis::RightTrigger) == GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER);
-	static_assert(static_cast<std::underlying_type_t<Gamepad::Axis>>(Gamepad::Axis::EnumEnd) == GLFW_GAMEPAD_AXIS_LAST + 1);
 }

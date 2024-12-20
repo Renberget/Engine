@@ -1,7 +1,7 @@
 #include <Engine.hpp>
 
 constexpr const char* VertexCode = "\
-#version 330 core\n\
+#version 460 core\n\
 \n\
 layout(location = 0) in vec2 iPos;\n\
 layout(location = 1) in vec4 iColor;\n\
@@ -16,7 +16,7 @@ void main()\n\
 ";
 
 constexpr const char* FragmentCode = "\n\
-#version 330 core\n\
+#version 460 core\n\
 \n\
 out vec4 FragColor;\n\
 \n\
@@ -40,20 +40,19 @@ int main()
 	windowCreateInfo.title = "Title";
 	windowCreateInfo.size = { 800, 600 };
 	Window window(windowCreateInfo);
-
-	Shader shader;
-	shader.createFromData(VertexCode, FragmentCode);
+	GlslShader shader;
+	shader.createFromCode(VertexCode, FragmentCode);
 
 	MeshLayout layout;
-	layout.add<Vec2f, Color32>();
+	layout.create<PosColor, &PosColor::pos, &PosColor::color>();
 
 	Mesh mesh;
-	mesh.vertices().create<PosColor>(std::array<PosColor, 3>
-	{
-		PosColor{ { 0.f, 0.5f }, { 255, 0, 0 } },
-		PosColor{ { 0.5f, -0.5f }, { 0, 255, 0 } },
-		PosColor{ { -0.5f, -0.5f }, { 0, 0, 255 } }
-	}, Usage::Static);
+	mesh.vertices().create<PosColor>(
+		{
+			{ .pos = { 0.f, 0.5f }, .color = { 255, 0, 0 } },
+			{ .pos = { 0.5f, -0.5f }, .color = { 0, 255, 0 } },
+			{ .pos = { -0.5f, -0.5f }, .color = { 0, 0, 255 } }
+		});
 	mesh.create(layout);
 
 	while (!window.shouldClose())

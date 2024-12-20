@@ -12,7 +12,7 @@ namespace input
 
     Vec2i Mouse::getPos()
     {
-        return Impl::getMousePos();
+        return Vec2i(Impl::getMousePos());
     }
     
     std::string_view Mouse::getName(Button button)

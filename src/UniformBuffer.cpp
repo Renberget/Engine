@@ -1,20 +1,20 @@
 #include "UniformBuffer.hpp"
 #include "Glfw.hpp"
 
-uint32_t UniformBuffer::CurrentBindingPoint = 0;
+UniformBuffer::Binding UniformBuffer::sCurrentBinding = 0;
 
-UniformBuffer::UniformBuffer() : Buffer(BufferType::Uniform) {}
+UniformBuffer::UniformBuffer() : BlockBuffer() {}
 
 void UniformBuffer::create()
 {
-	if (mBindingPoint == -1)
+	if (mBinding == InvalidBinding)
 	{
-		mBindingPoint = CurrentBindingPoint++;
-		glBindBufferBase(GL_UNIFORM_BUFFER, mBindingPoint, Buffer::id());
+		mBinding = sCurrentBinding++;
+		glBindBufferBase(GL_UNIFORM_BUFFER, mBinding, Buffer::id());
 	}
 }
 
-uint32_t UniformBuffer::bindingPoint() const
+UniformBuffer::Binding UniformBuffer::binding() const
 {
-	return mBindingPoint;
+	return mBinding;
 }

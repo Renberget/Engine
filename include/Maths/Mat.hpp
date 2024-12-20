@@ -1,146 +1,76 @@
 #pragma once
 #include "Vec4.hpp"
 #include <array>
-#include <initializer_list>
-#include <assert.h>
+#include <span>
+#include <cassert>
 
-template<size_t C, size_t R, Arithmetic T = float>
+template<size_t C, size_t R, arithmetic T> requires (C != 0 && R != 0)
 class Mat
 {
-public: 
-    template<typename = std::enable_if_t<C == R>>
-    constexpr static Mat<C, R, T> Identity()
-    {
-        Mat<C, R, T> identity;
-        for (size_t y = 0; y < R; ++y)
-        {
-            for (size_t x = 0; x < C; ++x)
-            {
-                if (x == y)
-                {
-                    identity.get(x, y) = static_cast<T>(1);
-                }
-            }
-        }
-        return identity;
-    }
+public:
+    constexpr static size_t N = C * R;
+    constexpr static bool Square = C == R;
+
+    consteval static Mat<C, R, T> zero();
+    consteval static Mat<C, R, T> identity() requires(Square);
 
     constexpr Mat() = default;
-    constexpr Mat(std::initializer_list<T> matrix)
-    {
-        assert(mMatrix.size() == matrix.size());
-        for (size_t i = 0; i < mMatrix.size(); ++i)
-        {
-            mMatrix[i] = *(matrix.begin() + i);
-        }
-    }
-    T& operator[](size_t index)
-    {
-        assert(index < C * R);
-        return mMatrix[index];
-    }
-    const T& operator[](size_t index) const
-    {
-        assert(index < C * R);
-        return mMatrix[index];
-    }
-    T& get(size_t x, size_t y)
-    {
-        assert(x < C);
-        assert(y < R);
-        return mMatrix[y * C + x];
-    }
-    const T& get(size_t x, size_t y) const
-    {
-        assert(x < C);
-        assert(y < R);
-        return mMatrix[y * C + x];
-    }
-    Mat<C, R, T> operator+(const Mat<C, R, T>& other) const
-    {
-        Mat<C, R, T> result;
-        for (size_t i = 0; i < mMatrix.size(); ++i)
-            result[i] = mMatrix[i] + other.mMatrix[i];
-        return result;
-    }
-    Mat<C, R, T>& operator+=(const Mat<C, R, T>& other)
-    {
-        for (size_t i = 0; i < mMatrix.size(); ++i)
-            mMatrix[i] += other.mMatrix[i];
-        return *this;
-    }
-    Mat<C, R, T> operator-(const Mat<C, R, T>& other) const
-    {
-        Mat<C, R, T> result;
-        for (size_t i = 0; i < mMatrix.size(); ++i)
-            result[i] = mMatrix[i] - other.mMatrix[i];
-        return result;
-    }
-    Mat<C, R, T>& operator-=(const Mat<C, R, T>& other)
-    {
-        for (size_t i = 0; i < mMatrix.size(); ++i)
-            mMatrix[i] -= other.mMatrix[i];
-        return *this;
-    }
-    template<size_t C2>
-    Mat<C2, C, T> operator*(const Mat<C2, C, T>& other) const
-    {
-        Mat<C2, C, T> result;
-        size_t i = 0;
-        for (size_t y = 0; y < C; ++y)
-        {
-            for (size_t x = 0; x < C2; ++x)
-            {
-                for (size_t k = 0; k < C; ++k)
-                {
-                    result[i] += get(k, y) * other.get(x, k);
-                }
-                ++i;
-            }
-        }
-        return result;
-    }
-    template<typename = std::enable_if_t<C == 2 && std::is_standard_layout_v<T>>>
-    Vec2<T> operator*(const Vec2<T>& other) const
-    {
-        Mat<1, C, T> result = (*this) * (*reinterpret_cast<const Mat<1, C, T>*>(&other));
-        return *reinterpret_cast<Vec2<T>*>(&result);
-    }
-    template<typename = std::enable_if_t<C == 3 && std::is_standard_layout_v<T>>>
-    Vec3<T> operator*(const Vec3<T>& other) const
-    {
-        Mat<1, C, T> result = (*this) * (*reinterpret_cast<const Mat<1, C, T>*>(&other));
-        return *reinterpret_cast<Vec3<T>*>(&result);
-    }
-    template<typename = std::enable_if_t<C == 4 && std::is_standard_layout_v<T>>>
-    Vec4<T> operator*(const Vec4<T>& other) const
-    {
-        Mat<1, C, T> result = (*this) * (*reinterpret_cast<const Mat<1, C, T>*>(&other));
-        return *reinterpret_cast<Vec4<T>*>(&result);
-    }
-    bool operator==(const Mat<C, R, T>& other)
-    {
-        return mMatrix == other.mMatrix;
-    }
-    bool operator!=(const Mat<C, R, T>& other)
-    {
-        return mMatrix != other.mMatrix;
-    }
-    const T* matrix() const
-    {
-        return mMatrix.data();
-    }
+    constexpr Mat(std::initializer_list<T> values);
+    constexpr Mat(std::span<const T> values);
+    template<arithmetic U>
+    constexpr explicit Mat(const Mat<C, R, U>& mat);
+
+    [[nodiscard]] const std::array<T, C * R>& matrix() const;
+    [[nodiscard]] T determinant() const requires(Square && C == 1);
+    [[nodiscard]] T determinant() const requires(Square && C > 1);
+
+    Mat<C, R, T>& transpose() requires(Square);
+    [[nodiscard]] Mat<R, C, T> transposed() const;
+
+    //A determinant of 0 will throw
+    Mat<C, R, T>& unsafeInvert() requires(Square);
+    //A determinant of 0 will throw
+    [[nodiscard]] Mat<C, R, T> unsafeInverse() const requires(Square);
+    //A determinant of 0 does nothing
+    Mat<C, R, T>& safeInvert() requires(Square);
+    //A determinant of 0 will return an identity matrix
+    [[nodiscard]] Mat<C, R, T> safeInverse() const requires(Square);
+
+    [[nodiscard]] constexpr T& at(size_t x, size_t y);
+    [[nodiscard]] constexpr const T& at(size_t x, size_t y) const;
+    [[nodiscard]] constexpr T& operator[](size_t index);
+    [[nodiscard]] constexpr const T& operator[](size_t index) const;
+
+    [[nodiscard]] Mat<C, R, T> operator-() const;
+    Mat<C, R, T>& operator+=(const Mat<C, R, T>& other);
+    Mat<C, R, T>& operator-=(const Mat<C, R, T>& other);
+    Mat<C, R, T>& operator*=(const Mat<C, R, T>& other);
+    Mat<C, R, T>& operator+=(T value);
+    Mat<C, R, T>& operator-=(T value);
+    Mat<C, R, T>& operator*=(T value);
 
 private:
-    std::array<T, C * R> mMatrix = {};
+    std::array<T, N> mMatrix;
 };
 
-using Mat2 = Mat<2, 2>;
-using Mat2x3 = Mat<2, 3>;
-using Mat2x4 = Mat<2, 4>;
-using Mat3 = Mat<3, 3>;
-using Mat3x2 = Mat<3, 2>;
-using Mat3x4 = Mat<3, 4>;
-using Mat4 = Mat<4, 4>;
-using Mat4x2 = Mat<4, 2>;
-using Mat4x3 = Mat<4, 3>;
+#include "Mat.inl"
+
+using Mat2f = Mat<2, 2, float_t>;
+using Mat2x3f = Mat<2, 3, float_t>;
+using Mat2x4f = Mat<2, 4, float_t>;
+using Mat3f = Mat<3, 3, float_t>;
+using Mat3x2f = Mat<3, 2, float_t>;
+using Mat3x4f = Mat<3, 4, float_t>;
+using Mat4f = Mat<4, 4, float_t>;
+using Mat4x2f = Mat<4, 2, float_t>;
+using Mat4x3f = Mat<4, 3, float_t>;
+
+using Mat2d = Mat<2, 2, double_t>;
+using Mat2x3d = Mat<2, 3, double_t>;
+using Mat2x4d = Mat<2, 4, double_t>;
+using Mat3d = Mat<3, 3, double_t>;
+using Mat3x2d = Mat<3, 2, double_t>;
+using Mat3x4d = Mat<3, 4, double_t>;
+using Mat4d = Mat<4, 4, double_t>;
+using Mat4x2d = Mat<4, 2, double_t>;
+using Mat4x3d = Mat<4, 3, double_t>;

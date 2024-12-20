@@ -5,6 +5,7 @@
 enum class Type : uint32_t
 {
 	Unknown,
+	Bool = 0x8B56,
 	Byte = 0x1400,
 	UnsignedByte = 0x1401,
 	Short = 0x1402,
@@ -19,55 +20,61 @@ enum class Type : uint32_t
 namespace
 {
 	template<typename T>
-	constexpr Type getType()
+	consteval Type getType()
 	{
 		return Type::Unknown;
 	}
 
 	template<>
-	constexpr Type getType<int8_t>()
+	consteval Type getType<bool>()
+	{
+		return Type::Bool;
+	}
+
+	template<>
+	consteval Type getType<int8_t>()
 	{
 		return Type::Byte;
 	}
 
 	template<>
-	constexpr Type getType<uint8_t>()
+	consteval Type getType<uint8_t>()
 	{
 		return Type::UnsignedByte;
 	}
 
 	template<>
-	constexpr Type getType<int16_t>()
+	consteval Type getType<int16_t>()
 	{
 		return Type::Short;
 	}
 
 	template<>
-	constexpr Type getType<uint16_t>()
+	consteval Type getType<uint16_t>()
 	{
 		return Type::UnsignedShort;
 	}
 
 	template<>
-	constexpr Type getType<int32_t>()
+	consteval Type getType<int32_t>()
 	{
 		return Type::Int;
 	}
 
 	template<>
-	constexpr Type getType<uint32_t>()
+	consteval Type getType<uint32_t>()
 	{
 		return Type::UnsignedInt;
 	}
 
 	template<>
-	constexpr Type getType<float_t>()
+	consteval Type getType<float_t>()
 	{
 		return Type::Float;
 	}
 
 	template<>
-	constexpr Type getType<double_t>()
+	consteval Type getType<double_t>()
 	{
 		return Type::Double;
 	}

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Input/Manager.hpp"
-#include "Maths/Vec2.hpp"
 #include "../WindowImpl.hpp"
+#include <array>
 
 namespace input
 {

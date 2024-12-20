@@ -39,8 +39,3 @@ std::span<const VideoMode> Monitor::Impl::videoModes() const
 	const GLFWvidmode* modes = glfwGetVideoModes(mHandle, &count);
 	return std::span<const VideoMode>(reinterpret_cast<const VideoMode*>(modes), static_cast<size_t>(count));
 }
-
-GLFWmonitor* Monitor::Impl::handle()
-{
-	return mHandle;
-}

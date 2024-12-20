@@ -5,7 +5,7 @@ namespace input
 {
 	void NormalizeModifier::apply(ActionValue& value)
 	{
-		value.value().normalize();
+		value.value().safeNormalize();
 	}
 
 	void NegateModifier::apply(ActionValue& value)
@@ -26,8 +26,8 @@ namespace input
 
 	void ClampModifier::apply(ActionValue& value)
 	{
-		value.value().x = std::max(min.x, std::min(value.value().x, max.x));
-		value.value().y = std::max(min.y, std::min(value.value().y, max.y));
+		value.value().x = std::clamp(value.value().x, min.x, max.x);
+		value.value().y = std::clamp(value.value().y, min.y, max.y);
 	}
 
 	void DeadZoneModifier::apply(ActionValue& value)

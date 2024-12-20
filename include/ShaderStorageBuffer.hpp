@@ -1,33 +1,37 @@
 #pragma once
 #include "BlockBuffer.hpp"
 
-class UniformBuffer : public BlockBuffer
+class ShaderStorageBuffer : public BlockBuffer
 {
 public:
-	UniformBuffer();
-	//The used object layout must match the shader's one
+	ShaderStorageBuffer();
 	template<typename T, auto T::*... Members>
 	void create(size_t size, Flags<BufferFlags> flags = {})
 	{
 		BlockBuffer::create<T, Members...>(size, flags);
 		create();
 	}
-	//The used object layout must match the shader's one
 	template<typename T, auto T::*... Members>
-	void create(const T& data, Flags<BufferFlags> flags = {})
+	void create(std::initializer_list<T> data, Flags<BufferFlags> flags = {})
 	{
-		BlockBuffer::create<T, Members...>(std::span(&data, 1), flags);
+		BlockBuffer::create<T, Members...>(data, flags);
+		create();
+	}
+	template<typename T, auto T::*... Members>
+	void create(std::span<const T> data, Flags<BufferFlags> flags = {})
+	{
+		BlockBuffer::create<T, Members...>(data, flags);
 		create();
 	}
 	template<typename T>
-	void update(const T& data)
+	void update(std::initializer_list<T> data, size_t offset = 0)
 	{
-		Buffer::update(std::span(&data, 1), 0);
+		Buffer::update(data, offset);
 	}
-	template<typename T, auto T::* Member>
-	void update(const member_ptr_to_type_t<decltype(Member)>& data)
+	template<typename T>
+	void update(std::span<const T> data, size_t offset = 0)
 	{
-		Buffer::update(Span(&data, 1), member_offset<T, Member>());
+		Buffer::update(data, offset);
 	}
 	template<typename T, Access A>
 	RestrictedSpan<T, A> map()

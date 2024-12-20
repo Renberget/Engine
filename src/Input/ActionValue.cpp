@@ -2,7 +2,7 @@
 
 namespace input
 {
-	ActionValue::ActionValue(Action::Type type) : mValue(0.f, 0.f), mType(type) {}
+	ActionValue::ActionValue(Action::Type type) : mValue(Vec2f::zero()), mType(type) {}
 
 	ActionValue::ActionValue(bool value) : mValue(value ? 1.f : -1.f, 0.f), mType(Action::Type::Button) {}
 

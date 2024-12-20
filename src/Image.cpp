@@ -22,9 +22,9 @@ Image& Image::operator=(Image&& image) noexcept
 	return *this;
 }
 
-Image::Image(std::string_view filePath)
+Image::Image(const std::filesystem::path& path)
 {
-	create(filePath);
+	create(path);
 }
 
 Image::Image(const Texture& texture)
@@ -42,13 +42,13 @@ Image::~Image()
 	stbi_image_free(mPixels);
 }
 
-void Image::create(std::string_view filePath)
+void Image::create(const std::filesystem::path& path)
 {
 	if (!mPixels)
 		stbi_image_free(mPixels);
 	
 	int nbChannels;
-	mPixels = stbi_load(filePath.data(), &mSize.x, &mSize.y, &nbChannels, 0);
+	mPixels = stbi_load(path.string().c_str(), &mSize.x, &mSize.y, &nbChannels, 0);
 	assert(mPixels);
 	assert(nbChannels <= 4);
 	mFormat = nbChannels == 1 ? Texture::Format::R : 
@@ -81,26 +81,25 @@ void Image::create(const Vec2i& size, Texture::Format format)
 void Image::update(const Texture& texture)
 {
 	assert(mSize == texture.size() && mFormat == texture.format());
-	texture.bind();
-	glGetTexImage(GL_TEXTURE_2D, 0, static_cast<GLenum>(mFormat), GL_UNSIGNED_BYTE, reinterpret_cast<void*>(mPixels));
+	glGetTextureImage(texture.id(), 0, static_cast<GLenum>(mFormat), GL_UNSIGNED_BYTE, mSize.x * mSize.y, reinterpret_cast<void*>(mPixels));
 }
 
-void Image::save(std::string_view filePath, FileFormat format) const
+void Image::save(const std::filesystem::path& path, FileFormat format) const
 {
 	switch (format)
 	{
 	case FileFormat::PNG:
-		stbi_write_png(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), 4 * mSize.x);
+		stbi_write_png(path.string().c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), 4 * mSize.x);
 		return;
 	case FileFormat::BMP:
-		stbi_write_bmp(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
+		stbi_write_bmp(path.string().c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
 		return;
 	case FileFormat::TGA:
-		stbi_write_tga(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
+		stbi_write_tga(path.string().c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels));
 		return;
 	case FileFormat::JPG:
 		constexpr int jpgMaxQuality = 100;
-		stbi_write_jpg(filePath.data(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), jpgMaxQuality);
+		stbi_write_jpg(path.string().c_str(), mSize.x, mSize.y, 4, reinterpret_cast<const void*>(mPixels), jpgMaxQuality);
 		return;
 	}
 }

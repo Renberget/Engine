@@ -5,12 +5,12 @@
  * @return true if T is a specialization of template U
  */
 template<typename T, template<typename...> typename U>
-inline constexpr bool is_instance_of_v = std::false_type{};
+constexpr bool is_instance_of_v = std::false_type{};
 /*!
  * @return true if T is a specialization of template U
  */
 template<template<typename...> typename T, typename... Us>
-inline constexpr bool is_instance_of_v<T<Us...>, T> = std::true_type{};
+constexpr bool is_instance_of_v<T<Us...>, T> = std::true_type{};
 
 
 template<typename T>
@@ -38,10 +38,16 @@ struct member_ptr_to_type;
 template<typename T, typename S>
 struct member_ptr_to_type<T S::*>
 {
- using type = T;
+	using type = T;
 };
 /*!
  * @brief Get the raw type of T, removing the member pointer
  */
 template<typename T>
 using member_ptr_to_type_t = typename member_ptr_to_type<T>::type;
+
+/*!
+* @brief Returns the offset in bytes of an object member
+*/
+template<typename T, auto T::* Member>
+static const size_t member_offset = reinterpret_cast<size_t>(&(reinterpret_cast<T*>(0)->*Member));

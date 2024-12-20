@@ -22,8 +22,11 @@
     <Content Include="..\Engine\include\Input\Keyboard.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\GlslShader.hpp" />
     <ClInclude Include="include\ArrayBuffer.hpp" />
+    <ClInclude Include="include\BinaryShader.hpp" />
     <ClInclude Include="include\Blending.hpp" />
+    <ClInclude Include="include\BlockBuffer.hpp" />
     <ClInclude Include="include\Buffer.hpp" />
     <ClInclude Include="include\Clock.hpp" />
     <ClInclude Include="include\Color.hpp" />
@@ -45,8 +48,10 @@
     <ClInclude Include="include\Input\Modifier.hpp" />
     <ClInclude Include="include\Input\Mouse.hpp" />
     <ClInclude Include="include\Maths\Mat.hpp" />
-    <ClInclude Include="include\Maths\Maths.hpp" />
+    <ClInclude Include="include\Maths\Math.hpp" />
     <ClInclude Include="include\Maths\Quat.hpp" />
+    <ClInclude Include="include\Maths\Transform3.hpp" />
+    <ClInclude Include="include\Maths\Transform2.hpp" />
     <ClInclude Include="include\Maths\Vec2.hpp" />
     <ClInclude Include="include\Maths\Vec3.hpp" />
     <ClInclude Include="include\Maths\Vec4.hpp" />
@@ -54,18 +59,18 @@
     <ClInclude Include="include\MeshLayout.hpp" />
     <ClInclude Include="include\Monitor.hpp" />
     <ClInclude Include="include\Maths\Rect.hpp" />
-    <ClInclude Include="include\RenderTarget.hpp" />
     <ClInclude Include="include\RenderTexture.hpp" />
     <ClInclude Include="include\RestrictedSpan.hpp" />
     <ClInclude Include="include\Shader.hpp" />
+    <ClInclude Include="include\ShaderStorageBuffer.hpp" />
     <ClInclude Include="include\Texture.hpp" />
     <ClInclude Include="include\Type.hpp" />
     <ClInclude Include="include\UniformBuffer.hpp" />
     <ClInclude Include="include\Utils\Uncopyable.hpp" />
-    <ClInclude Include="include\Utils\Debug.hpp" />
+    <ClInclude Include="include\Utils\Print.hpp" />
     <ClInclude Include="include\Utils\Delegate.hpp" />
     <ClInclude Include="include\Utils\Flags.hpp" />
-    <ClInclude Include="include\Utils\MoreTypeTraits.hpp" />
+    <ClInclude Include="include\Utils\Meta.hpp" />
     <ClInclude Include="include\Window.hpp" />
     <ClInclude Include="src\CursorImpl.hpp" />
     <ClInclude Include="src\External\StbImage.h" />
@@ -76,6 +81,7 @@
     <ClInclude Include="src\WindowImpl.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BinaryShader.cpp" />
     <ClCompile Include="src\Blending.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\Clock.cpp" />
@@ -86,6 +92,7 @@
     <ClCompile Include="src\EnumsAsserts.cpp" />
     <ClCompile Include="src\External\glad.c" />
     <ClCompile Include="src\Glfw.cpp" />
+    <ClCompile Include="src\GlslShader.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\Input\Action.cpp" />
     <ClCompile Include="src\Input\ActionInstance.cpp" />
@@ -102,13 +109,23 @@
     <ClCompile Include="src\MeshLayout.cpp" />
     <ClCompile Include="src\Monitor.cpp" />
     <ClCompile Include="src\MonitorImpl.cpp" />
-    <ClCompile Include="src\RenderTarget.cpp" />
     <ClCompile Include="src\RenderTexture.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\ShaderStorageBuffer.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\UniformBuffer.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\WindowImpl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\Maths\Mat.inl" />
+    <None Include="include\Maths\Math.inl" />
+    <None Include="include\Maths\Quat.inl" />
+    <None Include="include\Maths\Transform2.inl" />
+    <None Include="include\Maths\Transform3.inl" />
+    <None Include="include\Maths\Vec2.inl" />
+    <None Include="include\Maths\Vec3.inl" />
+    <None Include="include\Maths\Vec4.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

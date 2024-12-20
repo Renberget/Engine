@@ -14,5 +14,4 @@ public:
 
 private:
 	Glfw();
-	static void errorCallback(int error, const char* description);
 };

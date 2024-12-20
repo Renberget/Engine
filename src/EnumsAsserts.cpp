@@ -1,10 +1,11 @@
 #include "Glfw.hpp"
 #include "Type.hpp"
 #include "Texture.hpp"
-#include "Buffer.hpp"
+#include "Mesh.hpp"
 #include "Blending.hpp"
 
 //Type
+static_assert(static_cast<std::underlying_type_t<Type>>(Type::Bool) == GL_BOOL);
 static_assert(static_cast<std::underlying_type_t<Type>>(Type::Byte) == GL_BYTE);
 static_assert(static_cast<std::underlying_type_t<Type>>(Type::UnsignedByte) == GL_UNSIGNED_BYTE);
 static_assert(static_cast<std::underlying_type_t<Type>>(Type::Short) == GL_SHORT);
@@ -32,18 +33,31 @@ static_assert(static_cast<std::underlying_type_t<Texture::Format>>(Texture::Form
 
 static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth16) == GL_DEPTH_COMPONENT16);
 static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth24) == GL_DEPTH_COMPONENT24);
-static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth32F) == GL_DEPTH_COMPONENT32);
+static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth32) == GL_DEPTH_COMPONENT32);
+static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth32F) == GL_DEPTH_COMPONENT32F);
 static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth24Stencil8) == GL_DEPTH24_STENCIL8);
 static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::Depth32FStencil8) == GL_DEPTH32F_STENCIL8);
+static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::StencilIndex1) == GL_STENCIL_INDEX1);
+static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::StencilIndex4) == GL_STENCIL_INDEX4);
+static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::StencilIndex8) == GL_STENCIL_INDEX8);
+static_assert(static_cast<std::underlying_type_t<Texture::DepthStencilFormat>>(Texture::DepthStencilFormat::StencilIndex16) == GL_STENCIL_INDEX16);
 
 //Buffer
-static_assert(static_cast<std::underlying_type_t<Usage>>(Usage::Stream) == GL_STREAM_DRAW);
-static_assert(static_cast<std::underlying_type_t<Usage>>(Usage::Static) == GL_STATIC_DRAW);
-static_assert(static_cast<std::underlying_type_t<Usage>>(Usage::Dynamic) == GL_DYNAMIC_DRAW);
+static_assert(static_cast<std::underlying_type_t<Buffer::BufferFlags>>(Buffer::BufferFlags::DynamicStorage) == GL_DYNAMIC_STORAGE_BIT);
+static_assert(static_cast<std::underlying_type_t<Buffer::BufferFlags>>(Buffer::BufferFlags::MapRead) == GL_MAP_READ_BIT);
+static_assert(static_cast<std::underlying_type_t<Buffer::BufferFlags>>(Buffer::BufferFlags::MapWrite) == GL_MAP_WRITE_BIT);
+static_assert(static_cast<std::underlying_type_t<Buffer::BufferFlags>>(Buffer::BufferFlags::MapPersistent) == GL_MAP_PERSISTENT_BIT);
+static_assert(static_cast<std::underlying_type_t<Buffer::BufferFlags>>(Buffer::BufferFlags::MapCoherent) == GL_MAP_COHERENT_BIT);
+static_assert(static_cast<std::underlying_type_t<Buffer::BufferFlags>>(Buffer::BufferFlags::ClientStorage) == GL_CLIENT_STORAGE_BIT);
 
-static_assert(static_cast<std::underlying_type_t<BufferType>>(BufferType::Array) == GL_ARRAY_BUFFER);
-static_assert(static_cast<std::underlying_type_t<BufferType>>(BufferType::IndicesArray) == GL_ELEMENT_ARRAY_BUFFER);
-static_assert(static_cast<std::underlying_type_t<BufferType>>(BufferType::Uniform) == GL_UNIFORM_BUFFER);
+//Primitives
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::Points) == GL_POINTS);
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::Lines) == GL_LINES);
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::LineLoop) == GL_LINE_LOOP);
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::LineStrip) == GL_LINE_STRIP);
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::Triangles) == GL_TRIANGLES);
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::TriangleStrip) == GL_TRIANGLE_STRIP);
+static_assert(static_cast<std::underlying_type_t<Primitive>>(Primitive::TriangleFan) == GL_TRIANGLE_FAN);
 
 //Blending
 static_assert(static_cast<std::underlying_type_t<Blending::Factor>>(Blending::Factor::Zero) == GL_ZERO);

@@ -13,7 +13,7 @@ public:
 	const VideoMode& videoMode() const;
 	std::span<const VideoMode> videoModes() const;
 
-	GLFWmonitor* handle();
+	[[nodiscard]] inline GLFWmonitor* handle() { return mHandle; }
 
 private:
 	GLFWmonitor* mHandle;

@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
 
-template<typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+template<typename T> requires(std::is_enum_v<T>)
 class Flags
 {
 	using UType = std::underlying_type_t<T>;
@@ -18,6 +18,11 @@ public:
 	constexpr bool get(T flag) const
 	{
 		return (mFlags & static_cast<UType>(flag)) == static_cast<UType>(flag);
+	}
+
+	operator UType() const
+	{
+		return mFlags;
 	}
 
 private:
