@@ -12,7 +12,7 @@ The library adds classes for Vector 2/3/4, Matrix of any dimensions, Quaternion 
 ### Examples
 You can find some code samples in the [Test](https://github.com/Renberget/Engine/tree/master/Test) folder. The image used for testing comes from [here](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
 
-### Libraries externes
+### External dependencies
 - GLFW 3.4
 - OpenGL 4.6
 - stb_image 2.30
