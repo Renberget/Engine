@@ -19,4 +19,4 @@ You can find some code samples in the [Test](https://github.com/Renberget/Engine
 - stb_image_write 1.16
 
 ### Goal
-I plan to add more features to make my a fully functionnal game engine.
+I plan to add more features to make it a fully functionnal game engine.
